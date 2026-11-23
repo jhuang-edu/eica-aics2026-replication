@@ -1,0 +1,15 @@
+# vLLM Model Serving Configuration for EICA Extraction Pipeline
+# Production deployment on NVIDIA GeForce RTX 3090 (24GB VRAM)
+model: "Qwen/Qwen2.5-32B-Instruct"
+quantization: "awq"
+dtype: "auto"
+gpu_memory_utilization: 0.92
+max_model_len: 8192
+enforce_eager: false
+trust_remote_code: true
+seed: 42
+temperature: 0.0
+max_tokens: 2048
+# Design Control: Model weights frozen upon deployment (January 2025)
+# Longitudinal comparability guaranteed across 18-month archive (2025.01-2026.06)
+# Pluggable future upgrade path: Qwen3.8-27B (August 2026)

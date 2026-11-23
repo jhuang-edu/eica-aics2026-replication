@@ -93,7 +93,23 @@ Upon execution, the script verifies all datasets, calculates metrics, runs non-p
 
 ---
 
-### 5. Empirical Verification & Audit Ledger
+### 5. LLM Extraction Layer & VRAM Deployment Benchmark
+
+The information extraction stage of the EICA pipeline was deployed in production on on-premise hardware:
+- **Base Model**: `Qwen/Qwen2.5-32B-Instruct` (AWQ 4-bit quantization, static weight footprint $\approx$ 19.3 GB).
+- **Target Hardware**: Single `NVIDIA GeForce RTX 3090 GPU (24GB VRAM, Ampere architecture)`.
+- **Inference Engine**: `vLLM` server (`--max-model-len 8192`, `--gpu-memory-utilization 0.92`, temperature = 0.0, seed 42, max output 2,048 tokens).
+- **Context & VRAM Allocation Budget**:
+  - Workflow mode: Single-request execution (batch size = 1).
+  - Context window ceiling: Capped at 8,192 tokens (empirical mean context $\approx$ 2,200 tokens, historical maximum $\le$ 4,800 tokens).
+  - Dynamic KV Cache: Allocated at $\approx$ 2.0 GiB.
+  - Total Runtime VRAM: 19.3 GB (weights) + 2.0 GiB (KV cache) + 0.2 GiB (runtime/activation overhead) $\approx$ 21.5 GiB $\le$ 24 GiB (safely within single 24GB GPU capacity).
+- **Longitudinal Design Control**: Model weights were frozen upon system commissioning in January 2025. To guarantee controlled longitudinal comparability across the 18-month enterprise compliance archive (Jan 2025 -- Jun 2026), the system was deliberately maintained without in-flight upgrades to subsequent releases (Qwen3 in April 2025, Qwen3.5 in February 2026).
+- **Future Pluggable Upgrades**: Post-period open-source releases (such as high-efficiency `Qwen3.8-27B` released in August 2026) provide a pluggable upgrade path to further compress inference latency, while all baseline empirical metrics in this study remain strictly benchmarked on the frozen Qwen2.5-32B-Instruct weights.
+
+---
+
+### 6. Empirical Verification & Audit Ledger
 
 | Metric Indicator | In-Text Manuscript Finding | Code Reproduced Value | Status |
 | :--- | :--- | :--- | :---: |
@@ -115,7 +131,7 @@ Upon execution, the script verifies all datasets, calculates metrics, runs non-p
 
 ---
 
-### 6. Citation
+### 7. Citation
 
 ```bibtex
 @article{human_ai_screening_2026,
@@ -207,7 +223,23 @@ python reproduce_all.py
 
 ---
 
-### 5. 全要素对账核验表
+### 5. 大模型抽取层与本地部署显存基准
+
+EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
+- **主模型版本**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit 量化，静态模型权重占用约 19.3 GB）。
+- **部署硬件平台**：单张消费级 `NVIDIA GeForce RTX 3090 GPU (24GB 显存, Ampere 架构)`。
+- **推理运行引擎**：`vLLM` 高性能推理引擎（配置 `--max-model-len 8192`, `--gpu-memory-utilization 0.92`，采样参数 temperature = 0.0, seed 42, 最大输出 2,048 tokens）。
+- **上下文与显存精细预算**：
+  - 执行模式：单请求串行处理（Batch size = 1）。
+  - 上下文窗口预算：单份简历最大上下文硬性限制在 8,192 tokens（实测均值约 2,200 tokens，历史峰值 $\le$ 4,800 tokens）。
+  - 动态 KV Cache 显存：动态分配约 2.0 GiB。
+  - 运行时总显存：静态权重 19.3 GB + KV Cache 2.0 GiB + 激活与运行时开销 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB，稳定运行于单卡 24GB 显存阈值内。
+- **纵向台账受控一致性设计**：系统于 2025 年 1 月正式上线并即刻冻结模型权重。为确保企业 18 个月全周期合规人事档案（2025.01--2026.06）纵向数据的可比性与受控一致性，期内严禁模型漂移，未随后续 Qwen3（2025 年 4 月）及 Qwen3.5（2026 年 2 月）等模型发布而擅自升级。
+- **期后可插拔升级兼容性**：实验期后发布的开源模型（如 2026 年 8 月推出的高能效 `Qwen3.8-27B` 权重）为系统未来进一步压降推理延迟提供了即插即用（pluggable）的升级路径；本课题所有实证基准数据均严格基于冻结权重的 Qwen2.5-32B-Instruct 产出。
+
+---
+
+### 6. 全要素对账核验表
 
 | 评估指标 | 论文正文报告数值 | 代码复现计算数值 | 对账结果 |
 | :--- | :--- | :--- | :---: |
@@ -229,7 +261,7 @@ python reproduce_all.py
 
 ---
 
-### 6. 论文引用
+### 7. 论文引用
 
 ```bibtex
 @article{human_ai_screening_2026,
@@ -321,7 +353,23 @@ python reproduce_all.py
 
 ---
 
-### 5. 監査台帳：論文記載値と再現値の照合
+### 5. LLM抽出層およびVRAMハードウェア仕様
+
+EICAプロトコルの情報抽出層は、企業内のオンプレミス環境にて稼働しています：
+- **ベースモデル**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit量子化、静的重みフットプリント 約19.3 GB）。
+- **稼働ハードウェア**：単一の `NVIDIA GeForce RTX 3090 GPU (24GB VRAM, Ampereアーキテクチャ)`。
+- **推論エンジン**：`vLLM`（`--max-model-len 8192`, `--gpu-memory-utilization 0.92`、サンプリング設定 temperature = 0.0, seed 42, 最大出力トークン 2,048）。
+- **コンテキストおよびVRAMメモリ配分設計**：
+  - 実行方式：単一リクエスト順次処理（Batch size = 1）。
+  - コンテキスト上限：1件あたりの最大コンテキストを 8,192 トークンに制限（実績平均 約2,200トークン、過去最大値 $\le$ 4,800トークン）。
+  - 動的 KV Cache 占有量：約 2.0 GiB。
+  - 実行時総VRAM消費：静的重み 19.3 GB + KV Cache 2.0 GiB + ランタイムオーバーヘッド 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB（24GB GPUの安全閾値内で安定稼働）。
+  - **縦断的台帳データの一貫性制御**：2025年1月の稼働開始時にモデル重みを厳格に凍結。18ヶ月間にわたる企業のコンプライアンス採用記録（2025年1月〜2026年6月）におけるデータ比較可能性（longitudinal comparability）を担保するため、その後にリリースされた Qwen3（2025年4月）や Qwen3.5（2026年2月）への更新を意図的に行っていません。
+  - **将来のプラグイン型アップグレード**：調査期間外に公開された最新オープンソースモデル（2026年8月リリースの高効率モデル `Qwen3.8-27B` など）は、業務パイプラインを変更せずに遅延を短縮するプラグイン型（pluggable）アップグレードパスを提供します。なお、本研究のすべてのベースライン評価指標は、凍結された Qwen2.5-32B-Instruct 上で計測されたものです。
+
+---
+
+### 6. 監査台帳：論文記載値と再現値の照合
 
 | 評価指標 | 論文内の記載値 | コードによる再現計算値 | 検証結果 |
 | :--- | :--- | :--- | :---: |
@@ -343,7 +391,7 @@ python reproduce_all.py
 
 ---
 
-### 6. 引用情報
+### 7. 引用情報
 
 ```bibtex
 @article{human_ai_screening_2026,
