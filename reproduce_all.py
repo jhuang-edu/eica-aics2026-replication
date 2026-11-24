@@ -54,7 +54,7 @@ def verify_in_text_alignment(metrics, stats):
         ("Cohen's Kappa (EICA)", f"{metrics['kappa']['eica']:.3f}", "0.746"),
         ("Paired Delta-Kappa", f"{metrics['kappa']['delta']:.3f}", "0.496"),
         ("Paired Delta-Kappa 95% CI Lower", f"{stats['delta_kappa_ci'][0]:.3f}", "0.196"),
-        ("Paired Delta-Kappa 95% CI Upper (approx)", f"{round(stats['delta_kappa_ci'][1], 2):.2f}", "0.81"),
+        ("Paired Delta-Kappa 95% CI Upper", f"{stats['delta_kappa_ci'][1]:.3f}", "0.807"),
         ("Paired Exact McNemar p-value", f"{stats['mcnemar_p']:.3f}", "0.006"),
         ("Discordant Pairs Count (b vs c)", f"{stats['discordant_b']} vs {stats['discordant_c']}", "11 vs 1"),
         ("Pure HR Screening Time (Manual)", f"{metrics['time']['pure_hr_manual_mean']:.2f} min", "4.80 min"),
