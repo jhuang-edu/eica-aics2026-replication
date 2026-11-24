@@ -22,7 +22,7 @@
 
 Recruitment and talent acquisition in high-compliance industries (e.g., medical devices, healthcare, pharmaceuticals, aerospace) present strict technical and regulatory hurdles. Small and Medium Enterprises (SMEs) face acute resource constraints: human recruiters often struggle with dense technical dossiers, while fully autonomous AI screening risks catastrophic compliance omissions and ungrounded hallucinations.
 
-This open-science benchmark suite supports our empirical research paper titled **"Human-AI Division of Labor in LLM-Assisted Resume Screening at a Medical Device SME"** (currently **Under Review / Working Paper**). 
+This open-science benchmark suite supports our empirical research paper titled **"Human-AI Division of Labor in LLM-Assisted Resume Screening at a Medical Device SME"** (currently **Under Review** for the *2026 International Academic Conference on Artificial Intelligence and Case Studies (AI-CS 2026)* — Official Website: [https://www.icai-cs.com/](https://www.icai-cs.com/) | Portal: [https://www.ais.cn/attendees/index/A2INZU](https://www.ais.cn/attendees/index/A2INZU)). 
 
 The research introduces the **EICA (Evidence Card & Interactive Conflict Escalation) Protocol**, establishing a resilient division of labor between Large Language Models (LLMs) and Human Resource professionals:
 1. **Verbatim Evidence Grounding**: The LLM acts as an exhaustive evidentiary parser, extracting word-for-word citations from candidate resumes rather than generating subjective, hallucinated endorsements.
@@ -118,7 +118,7 @@ The information extraction stage of the EICA pipeline was deployed in production
 | **Manual Cohen's $\kappa$** | 0.250 (Slight agreement) | 0.250 | **MATCH 100%** |
 | **EICA Cohen's $\kappa$** | 0.746 (Substantial agreement) | 0.746 | **MATCH 100%** |
 | **Paired Difference $\Delta\kappa$** | +0.496 | +0.496 | **MATCH 100%** |
-| **Paired $\Delta\kappa$ 95% Bootstrap CI** | [0.196, 0.810] | [0.196, 0.807] (Sig., excludes 0) | **MATCH 100%** |
+| **Paired $\Delta\kappa$ 95% Bootstrap CI** | [0.196, 0.807] | [0.196, 0.807] (Sig., excludes 0) | **MATCH 100%** |
 | **Paired Exact McNemar $p$-value** | $p = 0.006$ | $p = 0.006$ (Discordant: 11 vs 1) | **MATCH 100%** |
 | **HR Screening Time per Dossier** | 4.80 min $\to$ 2.70 min (-43.8%) | 4.80 min $\to$ 2.70 min (-43.8%) | **MATCH 100%** |
 | **Total Organizational Time** | 4.80 min $\to$ 3.35 min (-30.2%) | 4.80 min $\to$ 3.35 min (-30.2%) | **MATCH 100%** |
@@ -152,7 +152,7 @@ The information extraction stage of the EICA pipeline was deployed in production
 
 在高合规壁垒行业（如医疗器械、生物医药、高端装备制造）中，企业招聘面临着双重严苛约束：一方面，中小企业（SME）缺乏大型跨国企业充沛的 HR 团队，普通招聘人员难以在极短时间内穿透专业技术壁垒与法规资质文件（如 GMP、ISO 13485、注册合规体系）；另一方面，若直接采用黑盒 AI 全自动初筛，极易出现**模型外生幻觉**与**假阴性误淘汰关键人才**的高昂合规代价。
 
-本开源基准代码库对应实证学术论文 **《大语言模型辅助简历初筛中的人机分工：基于医疗器械中小企业的实证研究》**（论文目前处于 **学术期刊/会议审稿投稿中** 状态）。
+本开源基准代码库对应实证学术论文 **《大语言模型辅助简历初筛中的人机分工：基于医疗器械中小企业的实证研究》**（目前正在 **2026年人工智能与案例研究国际学术会议（2026 International Academic Conference on Artificial Intelligence and Case Studies, AI-CS 2026）** 审稿投稿中；会议官网：[https://www.icai-cs.com/](https://www.icai-cs.com/) ｜ 艾思科蓝入口：[https://www.ais.cn/attendees/index/A2INZU](https://www.ais.cn/attendees/index/A2INZU)）。
 
 本研究创新提出了 **EICA 证据卡与交互式冲突升级协议（Evidence Card & Interactive Conflict Escalation Protocol）**，重塑了大模型与招聘人员的分工边界：
 1. **逐字证据回溯（Verbatim Grounding）**：大模型仅扮演“证据提取器与硬性条件核查器”，提取候选人简历中的逐字原文凭据，杜绝主观捏造；
@@ -248,7 +248,7 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
 | **人工筛选 Cohen's $\kappa$** | 0.250 (低度一致) | 0.250 | **100% 吻合** |
 | **EICA 协同 Cohen's $\kappa$** | 0.746 (高度一致) | 0.746 | **100% 吻合** |
 | **配对 $\kappa$ 提升增量 $\Delta\kappa$** | +0.496 | +0.496 | **100% 吻合** |
-| **$\Delta\kappa$ 95% Bootstrap 置信区间** | [0.196, 0.810] | [0.196, 0.807] (显著排除 0) | **100% 吻合** |
+| **$\Delta\kappa$ 95% Bootstrap 置信区间** | [0.196, 0.807] | [0.196, 0.807] (显著排除 0) | **100% 吻合** |
 | **配对 McNemar 检验 $p$ 值** | $p = 0.006$ (精确值: 0.006348) | $p = 0.006$ (分歧对: 11 vs 1) | **100% 吻合** |
 | **单份纯 HR 筛选耗时** | 4.80 分钟 $\to$ 2.70 分钟 (-43.8%) | 4.80 分钟 $\to$ 2.70 分钟 (-43.8%) | **100% 吻合** |
 | **组织总耗时 (含主管升级)** | 4.80 分钟 $\to$ 3.35 分钟 (-30.2%) | 4.80 分钟 $\to$ 3.35 分钟 (-30.2%) | **100% 吻合** |
@@ -282,7 +282,7 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
 
 医療機器、ヘルスケア、バイオ医薬品などの高い規制準拠（コンプライアンス）が求められる産業において、中小企業（SME）の人材採用は厳しい課題に直面しています。専任の技術人事担当者が不足しているため、複雑な専門技術用語や各種規制要件（ISO 13485、GMP、薬事認証など）を短時間で精査することは困難です。一方で、ブラックボックス化されたAIによる完全自動選考は、ハルシネーション（事実誤認）や法令上の必須資格の看過による重大なリスクを伴います。
 
-本オープンサイエンス・リポジトリは、学術論文 **「Human-AI Division of Labor in LLM-Assisted Resume Screening at a Medical Device SME」**（現在 **査読中・投稿中（Under Review / Working Paper）**）を完全に再現するための公式検証パッケージです。
+本オープンサイエンス・リポジトリは、学術論文 **「Human-AI Division of Labor in LLM-Assisted Resume Screening at a Medical Device SME」**（現在 **2026年 人工知能とケーススタディ国際学術会議（2026 International Academic Conference on Artificial Intelligence and Case Studies, AI-CS 2026）** へ投稿・査読中；公式サイト：[https://www.icai-cs.com/](https://www.icai-cs.com/) ｜ 投稿ポータル：[https://www.ais.cn/attendees/index/A2INZU](https://www.ais.cn/attendees/index/A2INZU)）を完全に再現するための公式検証パッケージです。
 
 本研究では、大規模言語モデル（LLM）と人事担当者の最適な協調を実現する **EICA（エビデンスカードおよび対話型コンフリクト・エスカレーション）プロトコル** を提案しています：
 1. **逐語的エビデンスの抽出（Verbatim Grounding）**：LLMは主観的評価を行わず、候補者の履歴書から必須条件に関する原文引用のみを正確に抽出します。
@@ -378,7 +378,7 @@ EICAプロトコルの情報抽出層は、企業内のオンプレミス環境�
 | **手作業 Cohen's $\kappa$** | 0.250 (低い一致) | 0.250 | **100% 一致** |
 | **EICA協調 Cohen's $\kappa$** | 0.746 (高い一致) | 0.746 | **100% 一致** |
 | **対応のある $\kappa$ 改善幅 $\Delta\kappa$** | +0.496 | +0.496 | **100% 一致** |
-| **$\Delta\kappa$ 95% Bootstrap 信頼区間** | [0.196, 0.810] | [0.196, 0.807] (有意、0を含まず) | **100% 一致** |
+| **$\Delta\kappa$ 95% Bootstrap 信頼区間** | [0.196, 0.807] | [0.196, 0.807] (有意、0を含まず) | **100% 一致** |
 | **McNemar 検定 $p$ 値** | $p = 0.006$ (正確値: 0.006348) | $p = 0.006$ (不一致対: 11 vs 1) | **100% 一致** |
 | **人事1件あたり審査所要時間** | 4.80 分 $\to$ 2.70 分 (-43.8%) | 4.80 分 $\to$ 2.70 分 (-43.8%) | **100% 一致** |
 | **組織全体の総審査時間 (審議含む)**| 4.80 分 $\to$ 3.35 分 (-30.2%) | 4.80 分 $\to$ 3.35 分 (-30.2%) | **100% 一致** |
