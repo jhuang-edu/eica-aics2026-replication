@@ -116,10 +116,10 @@ def plot_fig1_architecture(out_pdf="fig1_architecture.pdf", out_png="fig1_archit
 
     # Stage 2 Top & Bottom Cards (y_top=2.25..5.18 h=2.93; y_bot=0.10..2.08 h=1.98)
     draw_card(3.675, 2.25, 3.15, 2.93, "4-Column Evidence Card", [
-        ("Card(c, r) = < r, e(c), a(c), sigma(c, r) >", True, 7.6, COLOR_PRIMARY_NAVY),
+        ("Card(c, r) = < r, e(c, r), a(c, r), sigma(c, r) >", True, 7.2, COLOR_PRIMARY_NAVY),
         ("  r: Target competency requirement", False, 6.9, COLOR_TEXT_MAIN),
-        ("  e(c): Verbatim extracted quotation", False, 6.9, COLOR_TEXT_MAIN),
-        ("  a(c): Citation anchor (page/line span)", False, 6.9, COLOR_TEXT_MAIN),
+        ("  e(c, r): Verbatim extracted quotation", False, 6.9, COLOR_TEXT_MAIN),
+        ("  a(c, r): Citation anchor (page/line span)", False, 6.9, COLOR_TEXT_MAIN),
         ("  sigma: Closed flag in Sigma (empty if V):", False, 6.9, COLOR_TEXT_MAIN),
         ("    * verified: Grounded verbatim text", False, 6.9, COLOR_GREEN_DARK),
         ("    * not provided: Missing credential", False, 6.9, COLOR_AMBER_DARK),
