@@ -5,7 +5,7 @@ One-Click Reproduction Script for IEEE AI-CS 2026 Conference Paper
 Paper Title: Human-AI Division of Labor in LLM-Assisted Resume Screening
              at a Medical Device SME
 Target: IEEE AI-CS 2026 (ISBN: 979-8-3195-0203-2, Guangzhou, China)
-Authors: Ning Chen, Junjun Huang*
+Authors: Junjun Huang*, Ning Chen
 =============================================================================
 
 This master reproduction script automatically executes:
