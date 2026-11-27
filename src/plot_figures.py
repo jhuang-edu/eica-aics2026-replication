@@ -350,8 +350,8 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
 
     ax1.text(
         0.5, -0.32,
-        f"All N=40: McNemar p = {s['mcnemar_p']:.5f}\n"
-        f"Paired Delta-k = {m['kappa']['delta']:+.3f} (*n = {qms['N']}, {ra['N']})",
+        f"All N={m['N']}: McNemar p = {s['mcnemar_p']:.5f}, Paired \u0394\u03ba = {m['kappa']['delta']:+.3f}\n"
+        f"*Exploratory small sub-samples (n = {qms['N']}, {ra['N']}).",
         transform=ax1.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
 
@@ -443,8 +443,8 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
     m3 = abl["M3_EICA_FullVerifier"]
     ax2.text(
         0.5, -0.32,
-        f"M2 hard lock (k={m2['kappa']:.3f});\n"
-        f"M3 +verifier (FA={m3['FP']}, k={m3['kappa']:.3f}).",
+        f"M2 hard lock (\u03ba={m2['kappa']:.3f});\n"
+        f"M3 +verifier (FA={m3['FP']}, \u03ba={m3['kappa']:.3f}).",
         transform=ax2.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
 
@@ -580,7 +580,7 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
 
     ax3.text(
         0.5, -0.34,
-        f"Normalized: lambda_FR=1.0, lambda_Esc=0.25.\n"
+        f"Normalized: \u03bb_FR=1.0, \u03bb_Esc=0.25.\n"
         f"M3 FA={m3['FP']} ({-m3['net_time_reduction_pct']:+.1f}% net org. time).",
         transform=ax3.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
@@ -602,7 +602,8 @@ if __name__ == "__main__":
     f2_png = _out_dir / "fig2_results.png"
     plot_fig1_architecture(str(f1_pdf), str(f1_png))
     plot_fig2_results(str(_csv_default), str(f2_pdf), str(f2_png))
-    _paper_fig = _code_dir.parent / "paper" / "figures"
-    if _paper_fig.exists():
-        for _src in (f1_pdf, f1_png, f2_pdf, f2_png):
-            shutil.copy2(_src, _paper_fig / _src.name)
+    for _fig_dir_name in ("paper_4p", "paper_9p"):
+        _paper_fig = _code_dir.parent / _fig_dir_name / "figures"
+        if _paper_fig.exists():
+            for _src in (f1_pdf, f1_png, f2_pdf, f2_png):
+                shutil.copy2(_src, _paper_fig / _src.name)

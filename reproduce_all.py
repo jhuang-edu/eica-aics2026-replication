@@ -27,7 +27,11 @@ CODE_DIR = Path(__file__).resolve().parent
 SRC_DIR = CODE_DIR / "src"
 DATA_DIR = CODE_DIR / "data"
 OUTPUT_DIR = CODE_DIR / "output"
-PAPER_FIG_DIR = CODE_DIR.parent / "paper" / "figures"
+PAPER_FIG_DIR = CODE_DIR.parent / "paper_9p" / "figures"
+PAPER_FIG_DIRS = [
+    CODE_DIR.parent / "paper_4p" / "figures",
+    CODE_DIR.parent / "paper_9p" / "figures",
+]
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(SRC_DIR))
 
@@ -180,11 +184,12 @@ def main():
     plot_fig1_architecture(str(fig1_pdf), str(fig1_png))
     plot_fig2_results(eval_csv, str(fig2_pdf), str(fig2_png))
 
-    # Sync freshly generated figures to paper/figures/
-    if PAPER_FIG_DIR.exists():
-        for src in (fig1_pdf, fig1_png, fig2_pdf, fig2_png):
-            shutil.copy2(src, PAPER_FIG_DIR / src.name)
-        print(f"  - Synced updated vector PDFs & 300-DPI PNGs to {PAPER_FIG_DIR}")
+    # Sync freshly generated figures to paper_4p/figures/ and paper_9p/figures/
+    for fig_dir in PAPER_FIG_DIRS:
+        if fig_dir.exists():
+            for src in (fig1_pdf, fig1_png, fig2_pdf, fig2_png):
+                shutil.copy2(src, fig_dir / src.name)
+            print(f"  - Synced updated vector PDFs & 300-DPI PNGs to {fig_dir}")
 
     all_passed, n_checks = verify_in_text_alignment(
         metrics, stats, ablation, stress, comp_ablations=comp_ablations, sens_sweep=sens_sweep

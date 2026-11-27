@@ -1,7 +1,7 @@
 # EICA Constrained Extraction — Reference Prompt Template (`LLMExtract`)
 
 > **Provenance & Disclosure Notice:**  
-> The historical Chinese production prompt deployed inside the partner medical device manufacturer (Jan. 2025–Jun. 2026) incorporates proprietary internal SOP phrasing and is withheld under enterprise confidentiality and China PIPL governance controls. This file provides an **open English Reference Prompt Template** faithfully reproducing the exact structural, ontological, RAG-binding, and schema-masking constraints of **Algorithm 1 (`LLMExtract`, Section III)** for open-science inspection and local vLLM reproduction (`code/vllm_config.yaml`).
+> The historical Chinese production prompt deployed inside the partner medical device manufacturer (Jan. 2025–Jun. 2026) incorporates proprietary internal SOP phrasing and is withheld under enterprise confidentiality and China PIPL governance controls. This file provides an **open English Reference Prompt Template** faithfully reproducing the exact structural, ontological, RAG-binding, and schema-masking constraints of **Algorithm 1 (`LLMExtract`, Section III)** for open-science inspection and local vLLM reproduction ([`vllm_config.yaml`](../vllm_config.yaml); `code/vllm_config.yaml` in the full workspace).
 
 ---
 
@@ -46,7 +46,7 @@ Return a single JSON object matching the compiled EICA JSON Schema (exact keys: 
 
 ---
 
-## 3. Decoding & Serving Binding (`code/vllm_config.yaml`)
+## 3. Decoding & Serving Binding (`../vllm_config.yaml`)
 
 - **Model:** `Qwen/Qwen2.5-32B-Instruct` (4-bit AWQ; exact Jan. 2025 enterprise local checkpoint SHA was not archived in production logs)
 - **Serving Parameters:** `temperature=0.0`, `seed=42`, `max_tokens=2048`, `max_model_len=8192`, `batch_size=1`, `retry <= 2`

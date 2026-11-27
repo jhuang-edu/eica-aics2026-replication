@@ -90,7 +90,7 @@ python -m unittest tests.test_eica_unit -v
 # 3. Run E2E verification suite (standalone code/data subset on public clone; full 141/141 in complete manuscript workspace)
 python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ```
-Upon executing `python reproduce_all.py`, the script verifies all datasets, executes trace-driven M0–M3 ablations, $N_{\mathrm{syn}}=200$ stress-tests, component-off ablations, and sensitivity sweeps, regenerates `fig1_architecture` (Figure 1) and `fig2_results` (Figure 3, alongside Figure 2 = Algorithm 1 in the paper), and validates **42 automated audit checks (42/42 MATCH 100%)**. Note: in standalone clones of this replication repository (where manuscript LaTeX sources `paper/` and `Templates/` are not bundled), `run_e2e_suite.py` automatically runs all code, CSV, engine, and ablation E2E checks using cross-platform LF-normalized SHA-256 verification and cleanly skips manuscript/Tectonic-only checks with 0 failures and 0 errors.
+Upon executing `python reproduce_all.py`, the script verifies all datasets, executes trace-driven M0–M3 ablations, $N_{\mathrm{syn}}=200$ stress-tests, component-off ablations, and sensitivity sweeps, regenerates `fig1_architecture` (Figure 1) and `fig2_results` (Figure 3, alongside Figure 2 = Algorithm 1 in the paper), and validates **42 automated audit checks (42/42 MATCH 100%)**. Note: in standalone clones of this replication repository (where manuscript LaTeX sources `paper_4p/`, `paper_9p/`, and `Templates/` are not bundled), `run_e2e_suite.py` automatically runs all code, CSV, engine, and ablation E2E checks using cross-platform LF-normalized SHA-256 verification and cleanly skips manuscript/Tectonic-only checks with 0 failures and 0 errors.
 
 ---
 

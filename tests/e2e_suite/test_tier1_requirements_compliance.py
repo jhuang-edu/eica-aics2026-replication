@@ -28,12 +28,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import fitz
-
 try:
     from . import e2e_helpers as h
 except ImportError:
     import e2e_helpers as h
+
+fitz = h.fitz
 
 
 class TestTier1F1ReproductionAndCsv(unittest.TestCase):
@@ -464,7 +464,7 @@ class TestTier1F4CrossArtifactParity(unittest.TestCase):
             ("README.md", root_rm),
             ("code/README.md", code_rm),
             ("RESPONSE_LETTER_AICS2026.md", rl_txt),
-            ("paper/", paper_txts),
+            ("paper_9p/", paper_txts),
         ]:
             self.assertNotIn("Qwen3.8-27B", txt, f"Stale Qwen3.8-27B reference found in {label}")
         stale_unit_re = r"(?i)(?<!\d)(?:47|52|53|54|55|56|58)(?:`|\*|\s)*(?:项|件|std|unit|/)"

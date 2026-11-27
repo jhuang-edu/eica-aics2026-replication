@@ -3,9 +3,9 @@
 Shared Non-Destructive Helpers & Telemetry Analyzers for the 4-Tier E2E Suite.
 
 Design guarantees:
-  - Strictly read-only against code/data/, code/src/, paper/, Templates/, docs.
-  - Compiles paper/main.tex via `tectonic --keep-logs -o <tmp_dir>` inside a temp dir.
-  - Runs code/reproduce_all.py inside an isolated temp copy of code/ + paper/figures/.
+  - Strictly read-only against code/data/, code/src/, paper_9p/, Templates/, docs.
+  - Compiles paper_9p/main.tex via `tectonic --keep-logs -o <tmp_dir>` inside a temp dir.
+  - Runs code/reproduce_all.py inside an isolated temp copy of code/ + paper_9p/figures/.
   - Uses `with fitz.open(...) as doc:` and Windows `onexc` write-bit clearing to prevent
     WinError 32 / WinError 5 cleanup issues.
   - Caches isolated tectonic and reproduce_all runs once per process via lru_cache.
@@ -38,14 +38,14 @@ except ImportError:  # pragma: no cover
 
 _THIS_CODE_ROOT = Path(__file__).resolve().parents[2]
 _PARENT_ROOT = Path(__file__).resolve().parents[3]
-HAS_FULL_WORKSPACE = (_PARENT_ROOT / "paper" / "main.tex").exists() and (_THIS_CODE_ROOT.name == "code")
+HAS_FULL_WORKSPACE = (_PARENT_ROOT / "paper_9p" / "main.tex").exists() and (_THIS_CODE_ROOT.name == "code")
 STANDALONE_REPLICATION_MODE = not HAS_FULL_WORKSPACE
 
 REPO_ROOT = _PARENT_ROOT if HAS_FULL_WORKSPACE else _THIS_CODE_ROOT
 CODE_DIR = _THIS_CODE_ROOT
 SRC_DIR = CODE_DIR / "src"
 DATA_DIR = CODE_DIR / "data"
-PAPER_DIR = REPO_ROOT / "paper"
+PAPER_DIR = REPO_ROOT / "paper_9p"
 SECTIONS_DIR = PAPER_DIR / "sections"
 PAPER_FIG_DIR = PAPER_DIR / "figures"
 TEMPLATES_DIR = REPO_ROOT / "Templates"
@@ -67,7 +67,7 @@ def requires_full_workspace(test_item):
     """Skip manuscript/LaTeX/Templates-only E2E checks cleanly in standalone replication clones."""
     return unittest.skipUnless(
         HAS_FULL_WORKSPACE,
-        "Skipped in standalone code replication clone (requires full author workspace with paper/, Templates/, and tectonic).",
+        "Skipped in standalone code replication clone (requires full author workspace with paper_9p/, Templates/, and tectonic).",
     )(test_item)
 
 
@@ -162,7 +162,7 @@ class TectonicBuildResult:
 
 @functools.lru_cache(maxsize=1)
 def get_tectonic_build() -> TectonicBuildResult:
-    """Compile paper/main.tex non-destructively into a temp directory once per process."""
+    """Compile paper_9p/main.tex non-destructively into a temp directory once per process."""
     tmp_dir = Path(tempfile.mkdtemp(prefix="eica_tex_"))
     try:
         t0 = time.perf_counter()
@@ -211,7 +211,7 @@ def get_reproduce_run() -> ReproduceRunResult:
     tmp_root = Path(tempfile.mkdtemp(prefix="eica_repro_"))
     try:
         tmp_code = tmp_root / "code"
-        tmp_paper_fig = tmp_root / "paper" / "figures"
+        tmp_paper_fig = tmp_root / "paper_9p" / "figures"
         tmp_code.mkdir(parents=True, exist_ok=True)
         tmp_paper_fig.mkdir(parents=True, exist_ok=True)
         (tmp_code / "output").mkdir(parents=True, exist_ok=True)

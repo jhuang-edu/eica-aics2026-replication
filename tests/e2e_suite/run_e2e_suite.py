@@ -35,7 +35,7 @@ TIER_MODULES: Dict[str, str] = {
 
 
 def check_reference_urls(timeout_sec: float = 8.0) -> Dict[str, object]:
-    """Optional live HTTP/Crossref check for DOIs/URLs in paper/main.tex (only with --check-urls)."""
+    """Optional live HTTP/Crossref check for DOIs/URLs in paper_9p/main.tex (only with --check-urls)."""
     import urllib.parse
     from e2e_suite import e2e_helpers as h
 

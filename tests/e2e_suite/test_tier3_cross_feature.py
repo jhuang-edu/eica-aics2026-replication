@@ -176,7 +176,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertEqual(rep.returncode, 0)
         with tempfile.TemporaryDirectory(prefix="eica_t306_") as td:
             td_p = Path(td)
-            paper_copy = td_p / "paper"
+            paper_copy = td_p / "paper_9p"
             shutil.copytree(h.PAPER_DIR, paper_copy)
             (paper_copy / "figures" / "fig1_architecture.pdf").write_bytes(rep.fig1_pdf_bytes)
             (paper_copy / "figures" / "fig2_results.pdf").write_bytes(rep.fig2_pdf_bytes)

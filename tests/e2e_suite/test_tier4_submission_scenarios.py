@@ -189,7 +189,7 @@ class TestTier4SubmissionScenarios(unittest.TestCase):
             ("README.md", root_rm),
             ("code/README.md", code_rm),
             ("RESPONSE_LETTER_AICS2026.md", rl_txt),
-            ("paper/", paper_txts),
+            ("paper_9p/", paper_txts),
         ]:
             self.assertNotIn("Qwen3.8-27B", txt, f"Stale Qwen3.8-27B found in {label}")
         for label, txt in [("README.md", root_rm), ("code/README.md", code_rm), ("RESPONSE_LETTER_AICS2026.md", rl_txt)]:
@@ -201,7 +201,7 @@ class TestTier4SubmissionScenarios(unittest.TestCase):
         self.assertEqual(h.compute_sha256(h.ARCHIVE_CSV_PATH), h.EXPECTED_ARCHIVE_CSV_SHA256)
 
         prebuilt_pdf = h.PAPER_DIR / "main.pdf"
-        self.assertTrue(prebuilt_pdf.exists(), "Tracked paper/main.pdf missing")
+        self.assertTrue(prebuilt_pdf.exists(), "Tracked paper_9p/main.pdf missing")
         pre_tel = h.analyze_pdf_file(prebuilt_pdf)
         fresh_tel = h.analyze_pdf_bytes(h.get_tectonic_build().pdf_bytes)
 

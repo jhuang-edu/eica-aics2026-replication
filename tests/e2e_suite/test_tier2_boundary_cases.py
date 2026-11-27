@@ -24,12 +24,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import fitz
-
 try:
     from . import e2e_helpers as h
 except ImportError:
     import e2e_helpers as h
+
+fitz = h.fitz
 
 
 class TestTier2F1MetricsAndStatsBoundaries(unittest.TestCase):
