@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 Statistical Significance and Bootstrap Hypothesis Testing
-Paper: Human-AI Division of Labor in LLM-Assisted Resume Screening at a Medical Device SME
+Paper: Ontology-Constrained LLM Evidence Extraction and Finite-State Decision Support System
 Reproduces paired exact McNemar test and 20,000-resample Bootstrap 95% Confidence Intervals.
 """
 
 import math
 import numpy as np
 from pathlib import Path
-from metrics_calculator import cohen_kappa, load_dataset
+try:
+    from .metrics_calculator import cohen_kappa, load_dataset
+except ImportError:
+    from metrics_calculator import cohen_kappa, load_dataset
 
 
 def binom_pmf(k, n, p=0.5):
@@ -22,6 +25,8 @@ def paired_mcnemar_exact(y_benchmark, y_manual, y_eica):
     b: Manual discordant with benchmark, but EICA aligned (error corrected).
     c: Manual aligned with benchmark, but EICA discordant (performance degraded).
     """
+    if not (len(y_benchmark) == len(y_manual) == len(y_eica)):
+        raise ValueError("Input arrays must have equal length.")
     n = len(y_benchmark)
     b = 0  # Manual incorrect (0), EICA correct (1)
     c = 0  # Manual correct (1), EICA incorrect (0)
@@ -36,7 +41,13 @@ def paired_mcnemar_exact(y_benchmark, y_manual, y_eica):
 
     total_discordant = b + c
     if total_discordant == 0:
-        return {"b": 0, "c": 0, "n_discordant": 0, "p_value": 1.0}
+        return {
+            "b": 0,
+            "c": 0,
+            "n_discordant": 0,
+            "p_value": 1.0,
+            "p_value_formatted": "1.000 (exact: 1.000000)",
+        }
 
     # Two-sided exact binomial test with p = 0.5
     min_val = min(b, c)
@@ -59,8 +70,13 @@ def bootstrap_kappa_ci(y_benchmark, y_manual, y_eica, n_bootstraps=20000, seed=4
     2. Single-track EICA Cohen's Kappa
     3. Paired Difference Delta-Kappa = Kappa_EICA - Kappa_Manual
     """
-    np.random.seed(seed)
     n = len(y_benchmark)
+    if n == 0 or not (len(y_benchmark) == len(y_manual) == len(y_eica)):
+        raise ValueError("Input arrays must be non-empty and of equal length.")
+    if n_bootstraps <= 0:
+        raise ValueError("n_bootstraps must be positive.")
+
+    rng = np.random.RandomState(seed)
     bench_arr = np.array(y_benchmark)
     man_arr = np.array(y_manual)
     eica_arr = np.array(y_eica)
@@ -70,7 +86,7 @@ def bootstrap_kappa_ci(y_benchmark, y_manual, y_eica, n_bootstraps=20000, seed=4
     boot_delta_k = np.empty(n_bootstraps)
 
     for i in range(n_bootstraps):
-        indices = np.random.randint(0, n, size=n)
+        indices = rng.randint(0, n, size=n)
         b_sample = bench_arr[indices]
         m_sample = man_arr[indices]
         e_sample = eica_arr[indices]
