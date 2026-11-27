@@ -45,6 +45,10 @@ This repository provides the complete de-identified fixed-order sequential paire
 ├── data/                             # Empirical de-identified datasets
 │   ├── eval_records_40.csv           # N=40 paired dual-track screening trial records
 │   └── recruitment_archive_18m.csv   # 18-month SME talent acquisition baseline archive
+├── docs/                             # Formal proofs, full supplementary tables (Tables 1–5), and vignette/trace appendices
+│   ├── proofs.md                     # Complete proofs of Propositions 1–2, Eq. (5) advisory routing, and Big-O derivation
+│   ├── supplementary_tables.md       # Full Tables 1–5, 18-month archive provenance, and ablation/sensitivity ledgers
+│   └── vignettes.md                  # PIPL-compliant R05/R37/R31 vignettes and field error-trace diagnoses
 ├── prompts/                          # Open English reference prompt template for Algorithm 1 LLMExtract
 │   └── eica_extraction_reference_prompt.md
 ├── src/                              # Core EICA engine, ablation, stats & graphics modules
@@ -189,6 +193,10 @@ The information extraction stage of the EICA pipeline was deployed in production
 ├── data/                             # 实证脱敏数据集
 │   ├── eval_records_40.csv           # 40 份候选人双轨实测对照数据底表
 │   └── recruitment_archive_18m.csv   # 18 个月企业级招聘台账基准
+├── docs/                             # 完整形式化证明、补充表格（表 1–5）与脱敏案例/轨迹诊断附录
+│   ├── proofs.md                     # 命题 1–2 完整证明、式 (5) 路由与 Big-O 复杂度推导
+│   ├── supplementary_tables.md       # 表 1–5 完整明细、18 个月档案溯源与消融/敏感性台账
+│   └── vignettes.md                  # 合规脱敏 R05/R37/R31 案例与现场误差诊断
 ├── prompts/                          # Algorithm 1 英文参考提示词模板（企业内部中文原稿因 SOP/PIPL 保密未公开）
 │   └── eica_extraction_reference_prompt.md
 ├── src/                              # 核心算法引擎、消融基准、统计检验与绘图源码
@@ -333,6 +341,10 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
 ├── data/                             # 実証研究データセット（匿名化済み）
 │   ├── eval_records_40.csv           # 候補者40名の評価記録データ
 │   └── recruitment_archive_18m.csv   # 18ヶ月間の採用実績ベースライン
+├── docs/                             # 形式的証明・補足表（Table 1–5）・匿名化事例トレース付録
+│   ├── proofs.md                     # 命題 1–2 の完全証明、式 (5) ルーティング、計算量導出
+│   ├── supplementary_tables.md       # Table 1–5 全明細、18ヶ月採用台帳来歴、アブレーション・感度分析台帳
+│   └── vignettes.md                  # PIPL準拠 R05/R37/R31 事例と現場エラー診断
 ├── prompts/                          # Algorithm 1 英語リファレンス・プロンプトテンプレート
 │   └── eica_extraction_reference_prompt.md
 ├── src/                              # コアエンジン・アブレーション・統計・可視化スクリプト
