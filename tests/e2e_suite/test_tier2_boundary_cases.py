@@ -91,6 +91,7 @@ class TestTier2F1MetricsAndStatsBoundaries(unittest.TestCase):
         self.assertEqual(res["p_value"], 1.0)
 
 
+@h.requires_full_workspace
 class TestTier2F2ChecklistBoundaries(unittest.TestCase):
     """F2 (6 boundary cases)."""
 
@@ -134,6 +135,7 @@ class TestTier2F2ChecklistBoundaries(unittest.TestCase):
         self.assertEqual(tel.wrapped_eq_numbers, [], f"Wrapped equation numbers: {tel.wrapped_eq_numbers}")
 
 
+@h.requires_full_workspace
 class TestTier2F3TypographyBoundaries(unittest.TestCase):
     """F3 (5 boundary cases)."""
 
@@ -205,11 +207,13 @@ class TestTier2F4RoundingAndDocsBoundaries(unittest.TestCase):
         doc = run_exemplar_verification_replay.__doc__ or ""
         self.assertNotIn("data/06", doc, "Remove stale data/06 docstring reference")
 
+    @h.requires_full_workspace
     def test_t2_f4_04_no_broken_local_paths_in_readmes(self):
         root_rm = (h.REPO_ROOT / "README.md").read_text(encoding="utf-8")
         self.assertNotIn("EICA-AI-CS-2026-核查最终总结-muse.pdf", root_rm)
         self.assertNotIn("references.bib", root_rm)
 
+    @h.requires_full_workspace
     def test_t2_f4_05_no_stale_counts_23_or_34_in_docs(self):
         root_rm = (h.REPO_ROOT / "README.md").read_text(encoding="utf-8")
         code_rm = (h.REPO_ROOT / "code" / "README.md").read_text(encoding="utf-8")
@@ -222,6 +226,7 @@ class TestTier2F4RoundingAndDocsBoundaries(unittest.TestCase):
 class TestTier2F5IntegrityAndLatencyBoundaries(unittest.TestCase):
     """F5 (5 boundary cases)."""
 
+    @h.requires_full_workspace
     def test_t2_f5_01_no_unexecuted_commercial_llm_claims(self):
         body = h.combined_body_tex()
         self.assertNotRegex(
@@ -229,17 +234,20 @@ class TestTier2F5IntegrityAndLatencyBoundaries(unittest.TestCase):
             r"(?:GPT-4o?|Claude(?:-3)?|Gemini|Llama-3|Qwen3|DeepSeek(?:-[A-Za-z0-9.]+)?|Mistral)[^\n.]{0,60}(?:40 dossiers|40 resumes|accuracy|kappa|achieved \d+\.\d+%)",
         )
 
+    @h.requires_full_workspace
     def test_t2_f5_02_counterfactual_m2_m3_explicitly_labeled(self):
         r04 = h.strip_tex_comments(h.read_paper_sources()["04_setup.tex"]).lower()
         r05 = h.strip_tex_comments(h.read_paper_sources()["05_results.tex"]).lower()
         self.assertIn("trace-driven", r04)
         self.assertIn("counterfactual", r05)
 
+    @h.requires_full_workspace
     def test_t2_f5_03_synthetic_n200_explicitly_separated_from_n40(self):
         r04 = h.strip_tex_comments(h.read_paper_sources()["04_setup.tex"]).lower()
         self.assertIn("synthetic", r04)
         self.assertIn("200", r04)
 
+    @h.requires_full_workspace
     def test_t2_f5_04_tectonic_verification_claim_honesty(self):
         rl = (h.REPO_ROOT / "RESPONSE_LETTER_AICS2026.md").read_text(encoding="utf-8")
         if "verified cleanly under tectonic" in rl.lower():
@@ -526,11 +534,13 @@ class TestTier2F10FigureBoundaries(unittest.TestCase):
             self.assertTrue(out_pdf.exists() and out_pdf.stat().st_size > 5000)
             self.assertTrue(out_png.exists() and out_png.stat().st_size > 20000)
 
+    @h.requires_full_workspace
     def test_t2_f10_02_fig2_no_stixnonunicode_pua_glyphs(self):
         tel = h.analyze_pdf_file(h.PAPER_FIG_DIR / "fig2_results.pdf")
         self.assertEqual(tel.pua_chars, [], f"PUA glyphs in fig2_results.pdf: {tel.pua_chars}")
         self.assertFalse(any("stixnonunicode" in f.lower() for f in tel.fonts_base))
 
+    @h.requires_full_workspace
     def test_t2_f10_03_fig1_design_text_readable_no_tiny_fonts(self):
         tel = h.analyze_pdf_bytes(h.get_tectonic_build().pdf_bytes)
         fig1_pages, _ = h.locate_figure_pages(tel)
@@ -546,6 +556,7 @@ class TestTier2F10FigureBoundaries(unittest.TestCase):
         tiny_native = h.find_tiny_figure_spans(native_spans, min_body_pt=7.5, min_sub_pt=5.5)
         self.assertEqual(tiny_native, [], f"Fig. 1 native design font too small: {tiny_native[:6]}")
 
+    @h.requires_full_workspace
     def test_t2_f10_04_fig2_design_text_readable_no_tiny_footnotes(self):
         tel = h.analyze_pdf_bytes(h.get_tectonic_build().pdf_bytes)
         _, fig2_pages = h.locate_figure_pages(tel)

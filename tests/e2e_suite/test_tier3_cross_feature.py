@@ -39,6 +39,7 @@ class TestTier3CrossFeature(unittest.TestCase):
     def setUp(self):
         h.ensure_src_on_path()
 
+    @h.requires_pymupdf
     def test_t3_01_csv_mutation_propagates_to_plot_fig2_and_real_matches_tables(self):
         from plot_figures import plot_fig2_results
 
@@ -109,6 +110,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertEqual((res_esc.next_state, res_esc.final_decision), ("s_esc", "Esc"))
         self.assertEqual(res_esc.audit_entry["violations"], vv)
 
+    @h.requires_full_workspace
     def test_t3_03_dpin_corpus_matches_model_tex_and_fig1(self):
         from eica_engine import HybridRegulatoryRAG
 
@@ -121,6 +123,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertIn(r"\widehat{\mathrm{BM25}}(q, d)", m3)
         self.assertIn(r"\cos(\mathbf{v}_q, \mathbf{v}_d)", m3)
 
+    @h.requires_full_workspace
     def test_t3_04_verifier_r05_r31_matches_alg1_and_results_tex(self):
         from ablation_and_benchmark import run_exemplar_verification_replay
 
@@ -136,6 +139,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertTrue(any("UNANCHORED_SPAN" in v for v in replays["R31"]["verifier_violations"]))
         self.assertTrue(any("VERB_ESCALATION" in v for v in replays["R31"]["verifier_violations"]))
 
+    @h.requires_full_workspace
     def test_t3_05_reproduce_all_matches_response_letter_and_readmes(self):
         res = h.get_reproduce_run()
         self.assertEqual(res.returncode, 0)
@@ -166,6 +170,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertNotRegex(code_rm, r"\b0\.087\b")
         self.assertNotIn("-43.7", code_rm)
 
+    @h.requires_full_workspace
     def test_t3_06_tectonic_compile_with_fresh_generated_figures(self):
         rep = h.get_reproduce_run()
         self.assertEqual(rep.returncode, 0)
@@ -195,6 +200,7 @@ class TestTier3CrossFeature(unittest.TestCase):
             self.assertEqual(tel.wrapped_eq_numbers, [])
             self.assertFalse(tel.has_lmroman_fallback)
 
+    @h.requires_full_workspace
     def test_t3_07_ablation_m0_m3_metrics_match_expected_loss_panel_c(self):
         abl = h.get_cached_ablation_20k()
         self.assertEqual(abl["M0_Manual"]["expected_loss_by_lambda_fa"]["10"], 2.4)
@@ -208,6 +214,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertTrue("0.088" in r05 or "0.0875" in r05, "Expected 0.088 or 0.0875 in 05_results.tex")
         self.assertNotRegex(r05, r"\b0\.087\b")
 
+    @h.requires_full_workspace
     def test_t3_08_synthetic_benchmark_and_component_ablation_match_results_tex(self):
         import ablation_and_benchmark as ab
 
@@ -225,6 +232,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertIn("ablation", r05)
         self.assertIn("200", r05)
 
+    @h.requires_full_workspace
     def test_t3_09_rag_top_clauses_and_verifier_tags_consistent_across_engine_and_paper(self):
         from ablation_and_benchmark import run_exemplar_verification_replay
 
@@ -235,6 +243,7 @@ class TestTier3CrossFeature(unittest.TestCase):
         self.assertIn("SOP-RA-02", replays["R37"]["top_rag_clauses"])
         self.assertIn("SOP-RA-02", r05_tex)
 
+    @h.requires_full_workspace
     def test_t3_10_fsm_confirm_adjust_escalate_align_with_eq5_eq6_and_audit_log(self):
         from eica_engine import FSMDecisionGate
 
@@ -260,6 +269,7 @@ class TestTier3CrossFeature(unittest.TestCase):
             self.assertIn("ts", r.audit_entry)
             self.assertIn("action", r.audit_entry)
 
+    @h.requires_full_workspace
     def test_t3_11_bib_keys_inline_count_32_matches_response_letter_and_readmes(self):
         main_clean = h.strip_tex_comments(h.read_paper_sources()["main.tex"])
         bibs = h.extract_bibitems(main_clean)

@@ -28,6 +28,7 @@ except ImportError:
 class TestTier4SubmissionScenarios(unittest.TestCase):
     """6 full end-to-end submission audit scenarios."""
 
+    @h.requires_full_workspace
     def test_t4_s1_full_camera_ready_compile_and_ieee_checklist_audit(self):
         build = h.get_tectonic_build()
         self.assertEqual(build.returncode, 0, f"Tectonic build failed:\n{build.stderr}")
@@ -95,6 +96,7 @@ class TestTier4SubmissionScenarios(unittest.TestCase):
             )
         self.assertEqual(h.compute_sha256(h.EVAL_CSV_PATH), sha_before)
 
+    @h.requires_full_workspace
     def test_t4_s3_reviewer_critique_c1_c3_and_option1_integrity_audit(self):
         sources = h.read_paper_sources()
         m3 = h.strip_tex_comments(sources["03_model.tex"])
@@ -155,6 +157,7 @@ class TestTier4SubmissionScenarios(unittest.TestCase):
         res = FSMDecisionGate().step(vc, "Adjust", proposed_decision=1, reason="Attempt override > 15 chars", adjusted_statuses={"QA_VAL": "conflicting"})
         self.assertEqual(res.next_state, "s_block")
 
+    @h.requires_full_workspace
     def test_t4_s5_submission_repo_hygiene_and_documentation_sync_audit(self):
         lock_files = [str(p) for p in h.REPO_ROOT.rglob("~$*")]
         self.assertEqual(lock_files, [], f"Office lock files found: {lock_files}")
@@ -190,8 +193,9 @@ class TestTier4SubmissionScenarios(unittest.TestCase):
         ]:
             self.assertNotIn("Qwen3.8-27B", txt, f"Stale Qwen3.8-27B found in {label}")
         for label, txt in [("README.md", root_rm), ("code/README.md", code_rm), ("RESPONSE_LETTER_AICS2026.md", rl_txt)]:
-            self.assertIn("62", txt, f"Expected synced 62 unit-test count in {label}")
+            self.assertIn("65", txt, f"Expected synced 65 unit-test count in {label}")
 
+    @h.requires_full_workspace
     def test_t4_s6_non_destructive_prebuilt_pdf_and_dataset_immutability_parity(self):
         self.assertEqual(h.compute_sha256(h.EVAL_CSV_PATH), h.EXPECTED_EVAL_CSV_SHA256)
         self.assertEqual(h.compute_sha256(h.ARCHIVE_CSV_PATH), h.EXPECTED_ARCHIVE_CSV_SHA256)

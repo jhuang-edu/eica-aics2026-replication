@@ -2911,5 +2911,100 @@ class TestMetricsStatsAblationAndParity(unittest.TestCase):
         self.assertEqual(blk_20 / len(concise_reasons) * 100.0, 100.0)
 
 
+class TestPromptAndVLLMExtractor(unittest.TestCase):
+    """Unit tests for M38 reference prompt template, prompt assembler, and VLLMExtractor."""
+
+    def test_reference_prompt_file_and_builder_omit_tacit_slots(self):
+        from eica_engine import HybridRegulatoryRAG, build_extraction_prompt
+
+        prompt_doc = CODE_DIR / "prompts" / "eica_extraction_reference_prompt.md"
+        self.assertTrue(prompt_doc.exists(), "Reference prompt template file missing")
+        doc_text = prompt_doc.read_text(encoding="utf-8")
+        self.assertIn("Reference Prompt Template", doc_text)
+        self.assertIn("withheld under enterprise confidentiality", doc_text)
+
+        rag = HybridRegulatoryRAG()
+        clauses = rag.retrieve("ISO 13485 internal auditor sterile validation", top_k=3)
+        assembled = build_extraction_prompt(
+            "R05",
+            "QA/QC",
+            ["Bachelor in Biomedical Engineering.", "Attended ISO 13485 internal audit training."],
+            clauses,
+        )
+        self.assertEqual(len(assembled["messages"]), 2)
+        user_msg = assembled["messages"][1]["content"]
+        self.assertNotIn("QA_TACIT", user_msg)
+        self.assertIn("QA_CERT", user_msg)
+        self.assertIn(clauses[0][0].doc_id, user_msg)
+        self.assertEqual(assembled["json_schema"]["masked_tacit_slots"], ["QA_TACIT"])
+
+    def test_vllm_extractor_enforces_mask_and_strips_scalar_scores(self):
+        import json
+        from eica_engine import HybridRegulatoryRAG, VLLMExtractor
+
+        captured = {}
+
+        def fake_transport(payload: dict) -> str:
+            captured["payload"] = payload
+            return json.dumps({
+                "candidate_id": "R31",
+                "role": "QMS",
+                "overall_fit_score": 98.5,
+                "entries": [
+                    {"req_id": "QMS_CERT", "evidence": "ISO 13485", "anchor_lines": [1], "status": "verified", "score": 99},
+                    {"req_id": "QMS_LEAD", "evidence": "participated", "anchor_lines": [1], "status": "verified"},
+                    {"req_id": "QMS_EQUIV", "evidence": "", "anchor_lines": [], "status": "not_provided"},
+                    {"req_id": "QMS_TACIT", "evidence": "High ethics", "anchor_lines": [1], "status": "verified"},
+                ],
+            })
+
+        rag = HybridRegulatoryRAG()
+        clauses = rag.retrieve("ISO 13485 QMS internal audit", top_k=3)
+        extractor = VLLMExtractor(transport=fake_transport)
+        card, flags = extractor.extract("R31", "QMS", ["Participated in ISO 13485 audit."], clauses)
+
+        self.assertEqual(captured["payload"]["temperature"], 0.0)
+        self.assertEqual(captured["payload"]["seed"], 42)
+        self.assertEqual(captured["payload"]["max_tokens"], 2048)
+        self.assertNotIn("overall_fit_score", card)
+        self.assertTrue(any("TACIT_EXTRAPOLATION_BLOCKED" in f for f in flags))
+        tacit_entry = [e for e in card["entries"] if e["req_id"] == "QMS_TACIT"][0]
+        self.assertIsNone(tacit_entry["status"])
+        cert_entry = [e for e in card["entries"] if e["req_id"] == "QMS_CERT"][0]
+        self.assertNotIn("score", cert_entry)
+
+    def test_vllm_extractor_retries_up_to_two_times_and_fails_cleanly(self):
+        import json
+        from eica_engine import HybridRegulatoryRAG, VLLMExtractor
+
+        rag = HybridRegulatoryRAG()
+        clauses = rag.retrieve("NMPA registration", top_k=3)
+
+        calls = {"n": 0}
+
+        def flaky_transport(_payload: dict) -> str:
+            calls["n"] += 1
+            if calls["n"] < 3:
+                return "{invalid json"
+            return json.dumps({
+                "candidate_id": "R37",
+                "role": "RA",
+                "entries": [
+                    {"req_id": "RA_DEG", "evidence": "BSc Pharmacy", "anchor_lines": [1], "status": "verified"},
+                    {"req_id": "RA_REG", "evidence": "", "anchor_lines": [], "status": "not_provided"},
+                    {"req_id": "RA_CER", "evidence": "", "anchor_lines": [], "status": "not_provided"},
+                ],
+            })
+
+        extractor = VLLMExtractor(max_retries=2, transport=flaky_transport)
+        card, _flags = extractor.extract("R37", "RA", ["BSc Pharmacy."], clauses)
+        self.assertEqual(calls["n"], 3)
+        self.assertEqual(card["candidate_id"], "R37")
+
+        always_bad = VLLMExtractor(max_retries=2, transport=lambda _p: "not-json")
+        with self.assertRaises(RuntimeError):
+            always_bad.extract("R37", "RA", ["BSc Pharmacy."], clauses)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

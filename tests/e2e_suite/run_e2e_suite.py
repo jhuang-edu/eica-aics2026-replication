@@ -116,26 +116,32 @@ def main(argv: List[str] | None = None) -> int:
 
     total_ran = sum(s["ran"] for s in summaries)
     total_passed = sum(s["passed"] for s in summaries)
+    total_skipped = sum(s["skipped"] for s in summaries)
     total_failures = sum(s["failures"] for s in summaries)
     total_errors = sum(s["errors"] for s in summaries)
     overall_ok = all(s["ok"] for s in summaries) and (url_report is None or not url_report["failures"])
 
-    print(f"\n{'=' * 78}")
-    print("E2E SUITE SUMMARY (IEEE AI-CS 2026 - A2INZUIKKH)")
-    print(f"{'=' * 78}")
-    print(f"{'Tier':<10} {'Ran':>6} {'Passed':>8} {'Failed':>8} {'Errors':>8} {'Time(s)':>9} {'Status'}")
-    print("-" * 78)
+    from e2e_suite import e2e_helpers as h
+    mode_label = "FULL WORKSPACE" if h.HAS_FULL_WORKSPACE else "STANDALONE REPLICATION CLONE"
+
+    print(f"\n{'=' * 86}")
+    print(f"E2E SUITE SUMMARY (IEEE AI-CS 2026 - A2INZUIKKH) [{mode_label}]")
+    print(f"{'=' * 86}")
+    print(f"{'Tier':<10} {'Ran':>6} {'Passed':>8} {'Skipped':>8} {'Failed':>8} {'Errors':>8} {'Time(s)':>9} {'Status'}")
+    print("-" * 86)
     for s in summaries:
         st = "PASS" if s["ok"] else "FAIL"
-        print(f"{s['tier']:<10} {s['ran']:>6} {s['passed']:>8} {s['failures']:>8} {s['errors']:>8} {s['elapsed_sec']:>9.2f} {st}")
-    print("-" * 78)
-    print(f"{'TOTAL':<10} {total_ran:>6} {total_passed:>8} {total_failures:>8} {total_errors:>8} {total_elapsed:>9.2f} {'PASS' if overall_ok else 'FAIL'}")
-    print("=" * 78)
+        print(f"{s['tier']:<10} {s['ran']:>6} {s['passed']:>8} {s['skipped']:>8} {s['failures']:>8} {s['errors']:>8} {s['elapsed_sec']:>9.2f} {st}")
+    print("-" * 86)
+    print(f"{'TOTAL':<10} {total_ran:>6} {total_passed:>8} {total_skipped:>8} {total_failures:>8} {total_errors:>8} {total_elapsed:>9.2f} {'PASS' if overall_ok else 'FAIL'}")
+    print("=" * 86)
 
     if args.json_out is not None:
         payload = {
+            "mode": mode_label,
             "total_ran": total_ran,
             "total_passed": total_passed,
+            "total_skipped": total_skipped,
             "total_failures": total_failures,
             "total_errors": total_errors,
             "overall_ok": overall_ok,

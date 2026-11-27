@@ -5,7 +5,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Status](https://img.shields.io/badge/Status-Under%20Review-orange.svg)](#)
-[![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25%20Verified-brightgreen.svg)](#)
+[![Reproducibility](https://img.shields.io/badge/Core%20Suite-42%2F42%20%7C%2065%20Unit%20Tests-brightgreen.svg)](#)
 [![Open Science](https://img.shields.io/badge/Open%20Science-Replication%20Package-purple.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](#)
 
@@ -30,7 +30,7 @@ The research introduces the **EICA** system architecture, integrating four algor
 3. **Zero-VRAM Deterministic Span-Anchor & Verb-Conflict Verifier (Algorithm 1)**: Zero-stochasticity post-extraction CPU verifier checking contiguous verbatim span alignment ($\tau_{\mathrm{span}}=0.85$, `UNANCHORED_SPAN`), clause-scoped monotonic verb-strength escalation & negation (`VERB_ESCALATION`), and independent full-span statutory credential proof (`MISSING_CREDENTIAL_PROOF`).
 4. **Hard Finite-State Decision Gate**: Auditable human-in-the-loop state machine with a non-overridable conflict-escalation lock ($\mathcal{G}_{\mathrm{esc}}$) and mandatory guard ($\mathcal{G}_{\mathrm{M}}$) across pre- and post-adjustment transitions ($L_{\min}=15$).
 
-This repository provides the complete de-identified fixed-order sequential paired field dataset ($N=40$ real-world candidates), 18-month talent acquisition baseline archives, trace-driven counterfactual policy upper-bound replay (M0–M3), PIPL-compliant reconstructed vignettes (R05/R37/R31), $N_{\mathrm{syn}}=200$ deterministic unit-level rule-conformance fault-injection testbench + component-off ablations + parameter sensitivity sweeps, statistical routines (Bootstrap 95% CIs, exact McNemar tests, Cohen's $\kappa$), **42 automated audit checks**, **62 unit tests**, **141 end-to-end (E2E) verification checks**, and dynamic figure generators. Everything reproduces in a single command.
+This repository provides the complete de-identified fixed-order sequential paired field dataset ($N=40$ real-world candidates, single-blind department-manager benchmark), 18-month talent acquisition baseline archives, trace-driven counterfactual policy upper-bound replay (M0–M3), PIPL-compliant reconstructed vignettes (R05/R37/R31), an open English reference prompt template (`prompts/eica_extraction_reference_prompt.md`) with OpenAI-compatible vLLM adapter (`VLLMExtractor`), $N_{\mathrm{syn}}=200$ deterministic unit-level rule-conformance fault-injection testbench + component-off ablations + parameter sensitivity sweeps, statistical routines (Bootstrap 95% CIs, exact McNemar tests, Cohen's $\kappa$), **42 automated audit checks**, **65 unit tests**, dual-mode **end-to-end (E2E) verification checks** (standalone code/data subset on public clones; full 141-check suite including LaTeX/PDF/DOCX audits in the complete author manuscript workspace), and dynamic figure generators. All deterministic metrics, figures, and rate-based benchmarks reproduce identically from `reproduce_all.py` (absolute CPU latency in milliseconds scales with host hardware; manuscript figures report an Intel i5-1130G7 4-core / 8-thread workstation).
 
 ---
 
@@ -45,15 +45,17 @@ This repository provides the complete de-identified fixed-order sequential paire
 ├── data/                             # Empirical de-identified datasets
 │   ├── eval_records_40.csv           # N=40 paired dual-track screening trial records
 │   └── recruitment_archive_18m.csv   # 18-month SME talent acquisition baseline archive
+├── prompts/                          # Open English reference prompt template for Algorithm 1 LLMExtract
+│   └── eica_extraction_reference_prompt.md
 ├── src/                              # Core EICA engine, ablation, stats & graphics modules
-│   ├── eica_engine.py                # OntologySchemaMasker, HybridRegulatoryRAG, DeterministicVerifier, FSMDecisionGate
+│   ├── eica_engine.py                # OntologySchemaMasker, HybridRegulatoryRAG, DeterministicVerifier, FSMDecisionGate, VLLMExtractor
 │   ├── ablation_and_benchmark.py     # Trace-driven M0–M3 ablation, N_syn=200 stress-test, component ablations & sensitivity
 │   ├── metrics_calculator.py         # Precision, recall, kappa, F1, and efficiency calculator
 │   ├── statistical_tests.py          # McNemar exact tests & 20,000-resample Bootstrap CIs
 │   └── plot_figures.py               # Data-driven dynamic vector/raster figure generator (>=8pt, zero PUA)
 ├── tests/                            # Automated verification suites
-│   ├── test_eica_unit.py             # 62 stdlib unittest cases
-│   └── e2e_suite/                    # 141 opaque-box E2E compliance & integrity checks (Tiers 1–4)
+│   ├── test_eica_unit.py             # 65 stdlib unittest cases
+│   └── e2e_suite/                    # Dual-mode E2E suite (standalone code/data checks; full 141 checks in complete manuscript workspace)
 └── output/                           # Publication figures & audit outputs
     ├── fig1_architecture.pdf         # Figure 1 in manuscript: EICA System Architecture (Vector)
     ├── fig1_architecture.png         # Figure 1 in manuscript: 300-DPI Raster
@@ -78,13 +80,13 @@ Run the automated reproduction, unit, and E2E verification pipelines:
 # 1. Run 42 automated audit checks (42/42 MATCH 100%) and regenerate figures
 python reproduce_all.py
 
-# 2. Run 62 unit tests (62/62 OK)
+# 2. Run 65 unit tests (65/65 OK)
 python -m unittest tests.test_eica_unit -v
 
-# 3. Run 141 E2E verification checks (141/141 PASS)
+# 3. Run E2E verification suite (standalone code/data subset on public clone; full 141/141 in complete manuscript workspace)
 python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ```
-Upon executing `python reproduce_all.py`, the script verifies all datasets, executes trace-driven M0–M3 ablations, $N_{\mathrm{syn}}=200$ stress-tests, component-off ablations, and sensitivity sweeps, regenerates `fig1_architecture` (Figure 1) and `fig2_results` (Figure 3, alongside Figure 2 = Algorithm 1 in the paper), and validates **42 automated audit checks (42/42 MATCH 100%)**.
+Upon executing `python reproduce_all.py`, the script verifies all datasets, executes trace-driven M0–M3 ablations, $N_{\mathrm{syn}}=200$ stress-tests, component-off ablations, and sensitivity sweeps, regenerates `fig1_architecture` (Figure 1) and `fig2_results` (Figure 3, alongside Figure 2 = Algorithm 1 in the paper), and validates **42 automated audit checks (42/42 MATCH 100%)**. Note: in standalone clones of this replication repository (where manuscript LaTeX sources `paper/` and `Templates/` are not bundled), `run_e2e_suite.py` automatically runs all code, CSV, engine, and ablation E2E checks using cross-platform LF-normalized SHA-256 verification and cleanly skips manuscript/Tectonic-only checks with 0 failures and 0 errors.
 
 ---
 
@@ -93,8 +95,8 @@ Upon executing `python reproduce_all.py`, the script verifies all datasets, exec
 | Field Name | Description | Values / Range |
 | :--- | :--- | :--- |
 | `resume_id` | De-identified candidate dossier identifier | `R01` – `R40` |
-| `position_type` | Job family category in medical device SME | `Quality Engineer`, `Systems Engineer`, `Regulatory Specialist` |
-| `dept_decision` | Department Manager blind review benchmark | `1` (Advance), `0` (Reject) |
+| `position_type` | Job family category in medical device SME (raw Chinese CSV values) | `质量工程师` (QA/QC Engineer), `体系工程师` (QMS Engineer), `注册专员` (RA Specialist) |
+| `dept_decision` | Department Manager pre-experimental blinded operational benchmark | `1` (Advance), `0` (Reject) |
 | `hr_manual_decision`| Recruiter baseline unassisted determination | `1` (Advance), `0` (Reject) |
 | `hr_manual_time_min`| Unassisted manual screening duration (minutes) | Float (Mean: 4.80 min) |
 | `hr_manual_miss_key`| Manual omission of mandatory qualifications | `1` (Omitted), `0` (Captured) |
@@ -110,16 +112,16 @@ Upon executing `python reproduce_all.py`, the script verifies all datasets, exec
 ### 5. LLM Extraction Layer, VRAM Deployment & GenAI Compliance
 
 The information extraction stage of the EICA pipeline was deployed in production on on-premise hardware:
-- **Base Model**: `Qwen/Qwen2.5-32B-Instruct` (AWQ 4-bit quantization, static weight footprint $\approx$ 19.3 GB).
-- **Target Hardware**: Single `NVIDIA GeForce RTX 3090 GPU (24GB VRAM, Ampere architecture)`.
-- **Inference Engine**: `vLLM` server (`--max-model-len 8192`, `--gpu-memory-utilization 0.92`, temperature = 0.0, seed 42, max output 2,048 tokens).
+- **Base Model**: `Qwen/Qwen2.5-32B-Instruct` (AWQ 4-bit quantization, static weight footprint $\approx$ 19.3 GiB; exact Jan. 2025 enterprise local checkpoint SHA was not archived in production logs).
+- **Target Hardware**: Single `NVIDIA GeForce RTX 3090 GPU (24 GiB VRAM, Ampere architecture)`.
+- **Inference Engine & Reference Prompt**: `vLLM` server (`--max-model-len 8192`, `--gpu-memory-utilization 0.92`, temperature = 0.0, seed 42, max output 2,048 tokens). An open English reference prompt template (`prompts/eica_extraction_reference_prompt.md`) and OpenAI-compatible client adapter (`VLLMExtractor` in `src/eica_engine.py`) reproduce the exact Algorithm 1 schema/RAG constraints (the partner firm's original internal Chinese prompt is withheld under SOP/PIPL confidentiality).
 - **Context & VRAM Allocation Budget**:
   - Workflow mode: Single-request execution (batch size = 1).
   - Context window ceiling: Capped at 8,192 tokens (empirical mean context $\approx$ 2,200 tokens, historical maximum $\le$ 4,800 tokens).
   - Dynamic KV Cache: Allocated at $\approx$ 2.0 GiB.
-  - Total Runtime VRAM: 19.3 GB (weights) + 2.0 GiB (KV cache) + 0.2 GiB (runtime/activation overhead) $\approx$ 21.5 GiB $\le$ 24 GiB (safely within single 24GB GPU capacity).
-- **Longitudinal Design Control**: Model weights were frozen upon system commissioning in January 2025. To guarantee controlled longitudinal comparability across the 18-month enterprise compliance archive (Jan 2025 -- Jun 2026), the system was deliberately maintained without in-flight upgrades to subsequent releases (Qwen3 in April 2025, Qwen3.5 in February 2026).
-- **Future Pluggable Benchmark & GenAI Rules 4–5**: Future work (Section VI & Table 5) will release a public synthetic compliance benchmark comparing Vanilla LLM, Standard RAG, GCD-only, NLI-verified, and EICA pipelines across model families such as `Qwen3-32B`, while all empirical metrics in this study remain strictly benchmarked on frozen `Qwen2.5-32B-Instruct`. Per AI-CS 2026 `/GuidelinesforAITools` **Rule 5**, `Qwen2.5-32B-Instruct` is the evaluated Tier-A component whereas $N_{\mathrm{syn}}=200$ and component-off ablations are deterministic programmatic benchmarks (zero GenAI-fabricated empirical data); the `Acknowledgment` section discloses generative AI use solely for English copy-editing and LaTeX/software debugging (**Rule 4**).
+  - Total Runtime VRAM: 19.3 GiB (weights) + 2.0 GiB (KV cache) + 0.2 GiB (runtime/activation overhead) $\approx$ 21.5 GiB $\le$ 24 GiB (safely within single 24 GiB GPU capacity).
+- **Longitudinal Design Control**: Model weights were frozen upon system commissioning in January 2025. To guarantee controlled longitudinal comparability across the 18-month enterprise compliance archive (Jan 2025 -- Jun 2026), the system was deliberately maintained without in-flight upgrades to subsequent releases (Qwen3 in April 2025, Qwen3.5 in February 2026). Stages 1, 2b, and 3 execute deterministically on CPU; Stage 2 greedy GPU decoding (`temperature=0.0, seed=42`) had no multi-run stability sweep.
+- **Future Pluggable Benchmark & GenAI Transparency Disclosure**: Future work (Section VI & Table 5) will release a public synthetic compliance benchmark comparing Vanilla LLM, Standard RAG, GCD-only, NLI-verified, and EICA pipelines across model families such as `Qwen3-32B`, while all empirical metrics in this study remain strictly benchmarked on frozen `Qwen2.5-32B-Instruct`. Per IEEE and AI-CS 2026 generative-AI transparency guidelines, `Qwen2.5-32B-Instruct` is the evaluated Tier-A extraction component whereas $N_{\mathrm{syn}}=200$ and component-off ablations are deterministic programmatic benchmarks (zero GenAI-fabricated empirical data); generative AI assistants (Claude/GPT-class models) were used solely for English/multilingual documentation & copy-editing and LaTeX/software debugging, with all empirical logs and benchmarks verified solely by the authors.
 
 ---
 
@@ -172,7 +174,7 @@ The information extraction stage of the EICA pipeline was deployed in production
 3. **确定性原文锚点与动词冲突校验器（DeterministicVerifier, Algorithm 1）**：零随机性后置校验层，独立执行逐字连续区间对齐（$\tau_{\mathrm{span}}=0.85$，`UNANCHORED_SPAN`）、从句作用域单调动词强度越级与否定校验（`VERB_ESCALATION`）以及全区间法定资质证明校验（`MISSING_CREDENTIAL_PROOF`）；
 4. **硬有限状态决策闸门（Hard Finite-State Decision Gate）**：可审计的人机协同状态机，在调整前后严格执行不可绕过的冲突升级锁（$\mathcal{G}_{\mathrm{esc}}$）与强制资质守卫（$\mathcal{G}_{\mathrm{M}}$，$L_{\min}=15$）。
 
-本仓库开源了完整的 $N=40$ 真实双盲实测对照数据、18 个月企业招聘台账基准、轨迹反事实策略消融（M0–M3）、$N_{\mathrm{syn}}=200$ 确定性故障注入压力测试、组件消融与参数敏感性扫描、统计检验算法（Bootstrap 20,000 次重采样、精确 McNemar 检验、Cohen's $\kappa$）、**42 项自动化审计核验**、**62 项单元测试**、**141 项端到端（E2E）核验**以及动态矢量图表生成代码，实现“一行命令全要素 100% 精确复现”。
+本仓库开源了完整的 $N=40$ 真实单盲（部门主管实验前盲评基准）序贯配对实测对照数据、18 个月企业招聘台账基准、轨迹反事实策略消融（M0–M3）、英文参考提示词模板（`prompts/eica_extraction_reference_prompt.md`）与 vLLM 调用适配器（`VLLMExtractor`）、$N_{\mathrm{syn}}=200$ 确定性故障注入压力测试、组件消融与参数敏感性扫描、统计检验算法（Bootstrap 20,000 次重采样、精确 McNemar 检验、Cohen's $\kappa$）、**42 项自动化审计核验**、**65 项单元测试**、双模式**端到端（E2E）核验**（公开克隆自动运行全部代码/数据核验；完整稿件工作区运行全量 141 项含 LaTeX/PDF/Word 核验）以及动态矢量图表生成代码。所有确定性统计、比例指标与矢量图均可通过 `python reproduce_all.py` 一键精确复现（绝对 CPU 毫秒延迟因宿主硬件而异，正文实测平台为 Intel i5-1130G7 4 核 8 线程）。
 
 ---
 
@@ -187,15 +189,17 @@ The information extraction stage of the EICA pipeline was deployed in production
 ├── data/                             # 实证脱敏数据集
 │   ├── eval_records_40.csv           # 40 份候选人双轨实测对照数据底表
 │   └── recruitment_archive_18m.csv   # 18 个月企业级招聘台账基准
+├── prompts/                          # Algorithm 1 英文参考提示词模板（企业内部中文原稿因 SOP/PIPL 保密未公开）
+│   └── eica_extraction_reference_prompt.md
 ├── src/                              # 核心算法引擎、消融基准、统计检验与绘图源码
-│   ├── eica_engine.py                # 核心确定性 EICA 引擎（SchemaMasker, HybridRAG, DeterministicVerifier, FSMGate）
+│   ├── eica_engine.py                # 核心确定性 EICA 引擎（SchemaMasker, HybridRAG, DeterministicVerifier, FSMGate, VLLMExtractor）
 │   ├── ablation_and_benchmark.py     # M0–M3 轨迹消融、N_syn=200 压力测试、组件消融与敏感性扫描
 │   ├── metrics_calculator.py         # 混淆矩阵、一致性、F1 与效率指标计算引擎
 │   ├── statistical_tests.py          # McNemar 精确检验与 20,000 次 Bootstrap 95% 置信区间
 │   └── plot_figures.py               # 数据驱动高分辨率学术出版级矢量图生成模块（>=8pt、零 PUA）
 ├── tests/                            # 自动化单元与端到端测试套件
-│   ├── test_eica_unit.py             # 62 项标准库单元测试
-│   └── e2e_suite/                    # 141 项端到端（E2E）合规与完整性验证套件（Tiers 1–4）
+│   ├── test_eica_unit.py             # 65 项标准库单元测试
+│   └── e2e_suite/                    # 双模式 E2E 验证套件（公开克隆运行代码/数据子集；完整稿件工作区运行全量 141 项）
 └── output/                           # 生成的矢量图表与输出文件
     ├── fig1_architecture.pdf         # 对应论文 Figure 1：EICA 系统架构图（矢量）
     ├── fig1_architecture.png         # 对应论文 Figure 1：300-DPI 高清位图
@@ -215,15 +219,15 @@ The information extraction stage of the EICA pipeline was deployed in production
   ```
 
 #### 执行复现流水线与测试
-在 `code/` 目录下运行：
+在仓库根目录（或完整工作区 `code/` 目录）下运行：
 ```bash
 # 1. 运行 42 项自动化审计核验（42/42）并生成 Figure 1 与 Figure 3
 python reproduce_all.py
 
-# 2. 运行 62 项单元测试（62/62 OK）
+# 2. 运行 65 项单元测试（65/65 OK）
 python -m unittest tests.test_eica_unit -v
 
-# 3. 运行 141 项 E2E 验证套件（141/141 PASS）
+# 3. 运行 E2E 验证套件（公开克隆自动跳过 LaTeX/排版项零报错通过；完整稿件工作区运行全量 141/141）
 python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ```
 运行 `python reproduce_all.py` 后，终端将自动完成数据一致性检验、M0–M3 轨迹消融、$N_{\mathrm{syn}}=200$ 压力测试、组件消融与敏感性扫描、统计显著性检验与图表输出，并通过 **42 项自动化审计核验（42/42 MATCH 100%）**。
@@ -252,16 +256,16 @@ python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ### 5. 大模型抽取层、显存基准与 GenAI 合规边界
 
 EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
-- **主模型版本**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit 量化，静态模型权重占用约 19.3 GB）。
-- **部署硬件平台**：单张消费级 `NVIDIA GeForce RTX 3090 GPU (24GB 显存, Ampere 架构)`。
-- **推理运行引擎**：`vLLM` 高性能推理引擎（配置 `--max-model-len 8192`, `--gpu-memory-utilization 0.92`，采样参数 temperature = 0.0, seed 42, 最大输出 2,048 tokens）。
+- **主模型版本**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit 量化，静态模型权重占用约 19.3 GiB；2025 年 1 月企业本地部署日志未归档具体权重 SHA）。
+- **部署硬件平台**：单张消费级 `NVIDIA GeForce RTX 3090 GPU (24 GiB 显存, Ampere 架构)`。
+- **推理运行引擎与参考提示词**：`vLLM` 高性能推理引擎（配置 `--max-model-len 8192`, `--gpu-memory-utilization 0.92`，采样参数 temperature = 0.0, seed 42, 最大输出 2,048 tokens）。仓库提供英文参考提示词模板（`prompts/eica_extraction_reference_prompt.md`）及 OpenAI 兼容调用封装（`src/eica_engine.py` 中的 `VLLMExtractor`）；合作企业内部原始中文生产提示词因 SOP 与 PIPL 合规约束未原样发布。
 - **上下文与显存精细预算**：
   - 执行模式：单请求串行处理（Batch size = 1）。
   - 上下文窗口预算：单份简历最大上下文硬性限制在 8,192 tokens（实测均值约 2,200 tokens，历史峰值 $\le$ 4,800 tokens）。
   - 动态 KV Cache 显存：动态分配约 2.0 GiB。
-  - 运行时总显存：静态权重 19.3 GB + KV Cache 2.0 GiB + 激活与运行时开销 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB，稳定运行于单卡 24GB 显存阈值内。
-- **纵向台账受控一致性设计**：系统于 2025 年 1 月正式上线并即刻冻结模型权重。为确保企业 18 个月全周期合规人事档案（2025.01--2026.06）纵向数据的可比性与受控一致性，期内严禁模型漂移，未随后续 Qwen3（2025 年 4 月）及 Qwen3.5（2026 年 2 月）等模型发布而擅自升级。
-- **未来基准规划与 GenAI Rules 4–5 合规披露**：论文第 VI 节（含 Table 5）规划在未来公开合成合规基准上，面向 `Qwen3-32B` 等模型家族开展 Vanilla LLM / Standard RAG / GCD-only / NLI-verified / EICA 对比评测；本课题所有实证基准均严格基于冻结权重的 `Qwen2.5-32B-Instruct` 产出。依据 AI-CS 2026 `/GuidelinesforAITools` **Rule 5**，明确区分 Tier-A 被测抽取组件（`Qwen2.5-32B-Instruct`）与程序化确定性软件基准（$N_{\mathrm{syn}}=200$ 及组件消融），严禁使用 GenAI 伪造实测数据；论文 `Acknowledgment` 按 **Rule 4** 披露仅限英文润色与 LaTeX/工程排错的辅助使用边界。
+  - 运行时总显存：静态权重 19.3 GiB + KV Cache 2.0 GiB + 激活与运行时开销 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB，稳定运行于单卡 24 GiB 显存阈值内。
+- **纵向台账受控一致性设计**：系统于 2025 年 1 月正式上线并即刻冻结模型权重。为确保企业 18 个月全周期合规人事档案（2025.01--2026.06）纵向数据的可比性与受控一致性，期内严禁模型漂移，未随后续 Qwen3（2025 年 4 月）及 Qwen3.5（2026 年 2 月）等模型发布而擅自升级。阶段 1、2b 与 3 在 CPU 上严格确定性执行；阶段 2 贪婪解码（`temperature=0.0, seed=42`）未开展多次 GPU 重复采样稳定性扫描。
+- **未来基准规划与 GenAI 透明披露**：论文第 VI 节（含 Table 5）规划在未来公开合成合规基准上，面向 `Qwen3-32B` 等模型家族开展 Vanilla LLM / Standard RAG / GCD-only / NLI-verified / EICA 对比评测；本课题所有实证基准均严格基于冻结权重的 `Qwen2.5-32B-Instruct` 产出。依据 IEEE 与 AI-CS 2026 生成式 AI 透明度规范，明确区分 Tier-A 被测抽取组件（`Qwen2.5-32B-Instruct`）与程序化确定性软件基准（$N_{\mathrm{syn}}=200$ 及组件消融），严禁使用 GenAI 伪造实测数据；生成式 AI 助手（Claude/GPT 类模型）仅用于英文/多语种文档润色与 LaTeX/软件调试，所有实测日志与基准结果均由作者独立核实。
 
 ---
 
@@ -314,7 +318,7 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
 3. **決定論的スパン・動詞コンフリクト検証器（Algorithm 1）**：連続スパン一致（$\tau_{\mathrm{span}}=0.85$、`UNANCHORED_SPAN`）、節スコープ単調動詞強度エスカレーション・否定検査（`VERB_ESCALATION`）、および全スパン法定資格証明チェック（`MISSING_CREDENTIAL_PROOF`）を確率的揺らぎなしで独立実行。
 4. **ハード有限状態意思決定ゲート（Hard FSM Gate）**：変更前後で回避不能なコンフリクト・エスカレーション・ロック（$\mathcal{G}_{\mathrm{esc}}$）および必須要件ガード（$\mathcal{G}_{\mathrm{M}}$、$L_{\min}=15$）を強制する監査可能な HITL 状態機械。
 
-本リポジトリには、匿名化された $N=40$ 件の候補者二重評価データ、18ヶ月間の採用台帳ベースライン、反実仮想ポリシーアブレーション（M0–M3）、$N_{\mathrm{syn}}=200$ 決定論的フォールトインジェクション負荷試験・コンポーネント除去アブレーション・感度分析、統計検定（Bootstrap 20,000回、正確 McNemar 検定、Cohen's $\kappa$）、**42項目の自動監査チェック**、**62件の単体テスト**、**141件のE2E検証チェック**、および動的図表生成コードが含まれています。
+本リポジトリには、匿名化された $N=40$ 件の候補者単盲検（部門責任者による実験前ブラインド基準）逐次ペア評価データ、18ヶ月間の採用台帳ベースライン、反実仮想ポリシーアブレーション（M0–M3）、英語リファレンス・プロンプトテンプレート（`prompts/eica_extraction_reference_prompt.md`）および vLLM アダプタ（`VLLMExtractor`）、$N_{\mathrm{syn}}=200$ 決定論的フォールトインジェクション負荷試験・コンポーネント除去アブレーション・感度分析、統計検定（Bootstrap 20,000回、正確 McNemar 検定、Cohen's $\kappa$）、**42項目の自動監査チェック**、**65件の単体テスト**、デュアルモード**E2E検証チェック**（公開クローンではコード・データ項目を自動実行、論文原稿を含む完全ワークスペースでは全141項目を実行）、および動的図表生成コードが含まれています（CPU遅延の絶対値は実行環境に依存し、論文は Intel i5-1130G7 4コア/8スレッド環境で計測）。
 
 ---
 
@@ -329,15 +333,17 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
 ├── data/                             # 実証研究データセット（匿名化済み）
 │   ├── eval_records_40.csv           # 候補者40名の評価記録データ
 │   └── recruitment_archive_18m.csv   # 18ヶ月間の採用実績ベースライン
+├── prompts/                          # Algorithm 1 英語リファレンス・プロンプトテンプレート
+│   └── eica_extraction_reference_prompt.md
 ├── src/                              # コアエンジン・アブレーション・統計・可視化スクリプト
-│   ├── eica_engine.py                # 決定論的 EICA エンジン（SchemaMasker, HybridRAG, DeterministicVerifier, FSMGate）
+│   ├── eica_engine.py                # 決定論的 EICA エンジン（SchemaMasker, HybridRAG, DeterministicVerifier, FSMGate, VLLMExtractor）
 │   ├── ablation_and_benchmark.py     # M0–M3 トレースアブレーション、N_syn=200 負荷試験、コンポーネント除去・感度分析
 │   ├── metrics_calculator.py         # 一致率・Cohen's kappa・F1・効率性計算
 │   ├── statistical_tests.py          # McNemar正確検定およびBootstrap 95%信頼区間
 │   └── plot_figures.py               # データ駆動高解像度ベクター/ラスター図表生成（>=8pt、PUAなし）
 ├── tests/                            # 自動テストスイート
-│   ├── test_eica_unit.py             # 62件の標準ライブラリ単体テスト
-│   └── e2e_suite/                    # 141件のE2Eコンプライアンス・整合性検証スイート（Tiers 1–4）
+│   ├── test_eica_unit.py             # 65件の標準ライブラリ単体テスト
+│   └── e2e_suite/                    # デュアルモードE2E検証スイート（公開クローンはコード項目、完全ワークスペースは全141項目）
 └── output/                           # 生成図表・監査レポート出力先
     ├── fig1_architecture.pdf         # 論文 Figure 1：EICA システムアーキテクチャ（ベクター）
     ├── fig1_architecture.png         # 論文 Figure 1：300-DPI PNG
@@ -357,15 +363,15 @@ EICA 协议的信息提取层在企业内部单卡服务器上部署运行：
   ```
 
 #### 再現スクリプト・テストスイートの実行
-`code/` ディレクトリで以下を実行します：
+リポジトリルート（または完全ワークスペースの `code/` ディレクトリ）で以下を実行します：
 ```bash
 # 1. 42項目の自動監査チェック（42/42）を実行し Figure 1 と Figure 3 を生成
 python reproduce_all.py
 
-# 2. 62件の単体テストを実行（62/62 OK）
+# 2. 65件の単体テストを実行（65/65 OK）
 python -m unittest tests.test_eica_unit -v
 
-# 3. 141件のE2E検証スイートを実行（141/141 PASS）
+# 3. E2E検証スイートを実行（公開クローンではコード項目のみ自動実行しエラー0件、完全ワークスペースでは全141項目）
 python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ```
 `python reproduce_all.py` の実行後、すべてのデータセット検証、M0–M3 ポリシーアブレーション、$N_{\mathrm{syn}}=200$ 負荷試験・コンポーネント除去・感度分析、統計的有意性検定、図表出力が自動で行われ、**42項目の自動監査チェック（42/42 MATCH 100%）** と **100% 一致** することが確認されます。
@@ -377,8 +383,8 @@ python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 | カラム名 | 項目説明 | 設定値・範囲 |
 | :--- | :--- | :--- |
 | `resume_id` | 匿名化された履歴書管理番号 | `R01` ～ `R40` |
-| `position_type` | 募集職種区分 | `品質エンジニア`, `システムエンジニア`, `薬事申請担当` |
-| `dept_decision` | 部門長によるブラインド判定基準（真値） | `1` (通過), `0` (不採用) |
+| `position_type` | 募集職種区分（CSV内の原文中国語値） | `质量工程师` (品質エンジニア), `体系工程师` (QMSエンジニア), `注册专员` (薬事申請担当) |
+| `dept_decision` | 部門長による実験前ブラインド運用基準（operational benchmark） | `1` (通過), `0` (不採用) |
 | `hr_manual_decision`| 人事担当者による単独判定結果 | `1` (通過), `0` (不採用) |
 | `hr_manual_time_min`| 人事単独でのスクリーニング所要時間（分） | 浮動小数点数（平均：4.80分） |
 | `hr_manual_miss_key`| 人事による必須要件の見落とし有無 | `1` (見落としあり), `0` (見落としなし) |
@@ -394,16 +400,16 @@ python tests/e2e_suite/run_e2e_suite.py --tier all --verbose
 ### 5. LLM抽出層、VRAM仕様および GenAI コンプライアンス
 
 EICAプロトコルの情報抽出層は、企業内のオンプレミス環境にて稼働しています：
-- **ベースモデル**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit量子化、静的重みフットプリント 約19.3 GB）。
-- **稼働ハードウェア**：単一の `NVIDIA GeForce RTX 3090 GPU (24GB VRAM, Ampereアーキテクチャ)`。
-- **推論エンジン**：`vLLM`（`--max-model-len 8192`, `--gpu-memory-utilization 0.92`、サンプリング設定 temperature = 0.0, seed 42, 最大出力トークン 2,048）。
+- **ベースモデル**：`Qwen/Qwen2.5-32B-Instruct`（AWQ 4-bit量子化、静的重みフットプリント 約19.3 GiB；2025年1月企業導入時の正確なチェックポイントSHAは運用ログに未記録）。
+- **稼働ハードウェア**：単一の `NVIDIA GeForce RTX 3090 GPU (24 GiB VRAM, Ampereアーキテクチャ)`。
+- **推論エンジンと参考プロンプト**：`vLLM`（`--max-model-len 8192`, `--gpu-memory-utilization 0.92`、サンプリング設定 temperature = 0.0, seed 42, 最大出力トークン 2,048）。英語リファレンス・プロンプトテンプレート（`prompts/eica_extraction_reference_prompt.md`）と `VLLMExtractor` を収録（企業内部の中国語実運用プロンプトはSOP/PIPL機密保持のため非公開）。
 - **コンテキストおよびVRAMメモリ配分設計**：
   - 実行方式：単一リクエスト順次処理（Batch size = 1）。
   - コンテキスト上限：1件あたりの最大コンテキストを 8,192 トークンに制限（実績平均 約2,200トークン、過去最大値 $\le$ 4,800トークン）。
   - 動的 KV Cache 占有量：約 2.0 GiB。
-  - 実行時総VRAM消費：静的重み 19.3 GB + KV Cache 2.0 GiB + ランタイムオーバーヘッド 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB（24GB GPUの安全閾値内で安定稼働）。
-- **縦断的台帳データの一貫性制御**：2025年1月の稼働開始時にモデル重みを厳格に凍結。18ヶ月間にわたる企業のコンプライアンス採用記録（2025年1月〜2026年6月）におけるデータ比較可能性を担保するため、その後にリリースされた Qwen3（2025年4月）や Qwen3.5（2026年2月）への更新を意図的に行っていません。
-- **将来ベンチマーク計画および GenAI Rules 4–5**：第 VI 節では将来の公開合成コンプライアンスベンチマークにおいて `Qwen3-32B` 等を含むモデル群の比較評価を計画していますが、本研究のすべての実証指標は凍結された `Qwen2.5-32B-Instruct` 上で計測されたものです。AI-CS 2026 `/GuidelinesforAITools` **Rule 5** に準拠し、Tier-A 評価対象コンポーネント（`Qwen2.5-32B-Instruct`）とプログラムによる決定論的ソフトウェア基準（$N_{\mathrm{syn}}=200$ およびコンポーネント除去実験）を明確に区別し（GenAI によるデータ捏造ゼロ）、第 VII 節 `Acknowledgment` にて **Rule 4**（英文校正および LaTeX/ソフトウェアのデバッグ補助のみ）を開示しています。
+  - 実行時総VRAM消費：静的重み 19.3 GiB + KV Cache 2.0 GiB + ランタイムオーバーヘッド 0.2 GiB $\approx$ 21.5 GiB $\le$ 24 GiB（24 GiB GPUの安全閾値内で安定稼働）。
+- **縦断的台帳データの一貫性制御**：2025年1月の稼働開始時にモデル重みを厳格に凍結。18ヶ月間にわたる企業のコンプライアンス採用記録（2025年1月〜2026年6月）におけるデータ比較可能性を担保するため、その後にリリースされた Qwen3（2025年4月）や Qwen3.5（2026年2月）への更新を意図的に行っていません。ステージ 1・2b・3 はCPU上で厳密に決定論的実行を行い、ステージ 2 のGPU貪欲デコード（`temperature=0.0, seed=42`）については反復実行安定性検証は未実施です。
+- **将来ベンチマーク計画および GenAI 透明性開示**：第 VI 節では将来の公開合成コンプライアンスベンチマークにおいて `Qwen3-32B` 等を含むモデル群の比較評価を計画していますが、本研究のすべての実証指標は凍結された `Qwen2.5-32B-Instruct` 上で計測されたものです。IEEE および AI-CS 2026 の生成AI透明性ガイドラインに基づき、Tier-A 評価対象コンポーネント（`Qwen2.5-32B-Instruct`）とプログラムによる決定論的ソフトウェア基準（$N_{\mathrm{syn}}=200$ およびコンポーネント除去実験）を明確に区別し（GenAI によるデータ捏造ゼロ）、生成AIアシスタント（Claude/GPT系モデル）は英語・多言語ドキュメントの校正および LaTeX/ソフトウェアのデバッグ補助のみに使用した旨を開示しています。
 
 ---
 

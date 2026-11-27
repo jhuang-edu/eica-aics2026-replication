@@ -19,6 +19,7 @@ Covers F1..F11 per TEST_INFRA.md and e2e_spec_miner_r1/handoff.md:
 from __future__ import annotations
 
 import inspect
+import os
 import re
 import struct
 import subprocess
@@ -159,7 +160,7 @@ class TestTier1F1ReproductionAndCsv(unittest.TestCase):
         )
         self.assertTrue(unit_tests, "Expected unit tests under code/tests/test_*.py (M1 deliverable)")
         env = h.build_subprocess_env()
-        env["PYTHONPATH"] = str(h.SRC_DIR) + ";" + str(h.CODE_DIR / "tests")
+        env["PYTHONPATH"] = str(h.SRC_DIR) + os.pathsep + str(h.CODE_DIR / "tests")
         proc = subprocess.run(
             [sys.executable, "-m", "unittest", "-v"] + [p.stem for p in unit_tests],
             cwd=str(h.CODE_DIR / "tests"),
@@ -171,6 +172,7 @@ class TestTier1F1ReproductionAndCsv(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, f"Unit test suite failed:\n{proc.stdout}\n{proc.stderr}")
 
 
+@h.requires_full_workspace
 class TestTier1F2IEEEAndChecklistCompliance(unittest.TestCase):
     """F2: Checking list.pdf & IEEEtran_HOWTO.pdf Compliance (10 predicates)."""
 
@@ -327,6 +329,7 @@ class TestTier1F2IEEEAndChecklistCompliance(unittest.TestCase):
             self.assertGreaterEqual(w_px, 2000, f"{fig_name} width too low for 300 DPI: {w_px} px")
 
 
+@h.requires_full_workspace
 class TestTier1F3TectonicTypography(unittest.TestCase):
     """F3: Tectonic Compilation & PDF Typography Telemetry (7 predicates)."""
 
@@ -393,6 +396,7 @@ class TestTier1F3TectonicTypography(unittest.TestCase):
 class TestTier1F4CrossArtifactParity(unittest.TestCase):
     """F4: Multi-Artifact Numeric, Prose & Hygiene Parity (6 predicates)."""
 
+    @h.requires_full_workspace
     def test_t1_f4_01_paper_tables_and_prose_vs_reproduce(self):
         r05_res = h.read_paper_sources()["05_results.tex"]
         for tok in ("62.5\\%", "87.5\\%", "92.5\\%", "95.0\\%", "0.250", "0.746", "0.845", "0.896",
@@ -404,6 +408,7 @@ class TestTier1F4CrossArtifactParity(unittest.TestCase):
         self.assertNotIn("-43.7", r05_res)
         self.assertNotRegex(r05_res, r"\b0\.087\b")
 
+    @h.requires_full_workspace
     def test_t1_f4_02_response_letter_parity(self):
         rl = (h.REPO_ROOT / "RESPONSE_LETTER_AICS2026.md").read_text(encoding="utf-8")
         self.assertNotIn("reviewer's core", rl, "Grammar typo: use reviewers' core")
@@ -429,6 +434,7 @@ class TestTier1F4CrossArtifactParity(unittest.TestCase):
             self.assertNotIn("Invalid UTF-8", log, "RESPONSE_LETTER claims clean Tectonic build while UTF-8 warnings exist")
             self.assertNotIn("badness 10000", log, "RESPONSE_LETTER claims clean Tectonic build while badness 10000 warnings exist")
 
+    @h.requires_full_workspace
     def test_t1_f4_03_readme_and_code_readme_parity(self):
         root_rm = (h.REPO_ROOT / "README.md").read_text(encoding="utf-8")
         code_rm = (h.REPO_ROOT / "code" / "README.md").read_text(encoding="utf-8")
@@ -464,8 +470,9 @@ class TestTier1F4CrossArtifactParity(unittest.TestCase):
         stale_unit_re = r"(?i)(?<!\d)(?:47|52|53|54|55|56|58)(?:`|\*|\s)*(?:项|件|std|unit|/)"
         for label, txt in [("README.md", root_rm), ("code/README.md", code_rm), ("RESPONSE_LETTER_AICS2026.md", rl_txt)]:
             self.assertNotRegex(txt, stale_unit_re, f"Stale unit-test count found in {label}")
-            self.assertIn("62", txt, f"Expected updated 62 unit-test count in {label}")
+            self.assertIn("65", txt, f"Expected updated 65 unit-test count in {label}")
 
+    @h.requires_full_workspace
     def test_t1_f4_04_dpin_and_algorithm1_parity(self):
         h.ensure_src_on_path()
         from eica_engine import HybridRegulatoryRAG
@@ -506,6 +513,7 @@ class TestTier1F4CrossArtifactParity(unittest.TestCase):
         self.assertNotRegex(t3, r"\b0\.087\b")
 
 
+@h.requires_full_workspace
 class TestTier1F5Option1IntegrityAndRubric(unittest.TestCase):
     """F5: Option 1 Academic Integrity & Reviewer C1-C3 Rubric (5 predicates)."""
 
@@ -783,6 +791,7 @@ class TestTier1F10DynamicFigures(unittest.TestCase):
         self.assertGreater(len(res.fig2_pdf_bytes), 5000)
         self.assertGreater(len(res.fig2_png_bytes), 50000)
 
+    @h.requires_pymupdf
     def test_t1_f10_03_fig2_computes_dynamically_from_csv_path(self):
         h.ensure_src_on_path()
         from plot_figures import plot_fig2_results
@@ -807,6 +816,7 @@ class TestTier1F10DynamicFigures(unittest.TestCase):
             t_mod = h.analyze_pdf_file(p_mod).full_text
             self.assertNotEqual(t_orig, t_mod, "plot_fig2_results ignored csv_path and produced identical hardcoded figure")
 
+    @h.requires_pymupdf
     def test_t1_f10_04_zero_pua_glyphs_in_generated_figure_pdfs(self):
         res = h.get_reproduce_run()
         t1 = h.analyze_pdf_bytes(res.fig1_pdf_bytes)
@@ -814,6 +824,7 @@ class TestTier1F10DynamicFigures(unittest.TestCase):
         self.assertEqual(t1.pua_chars, [], f"PUA chars in fig1: {t1.pua_chars}")
         self.assertEqual(t2.pua_chars, [], f"PUA chars in fig2: {t2.pua_chars}")
 
+    @h.requires_pymupdf
     def test_t1_f10_05_fig1_synced_12_docs_and_rule2_3(self):
         res = h.get_reproduce_run()
         txt = h.analyze_pdf_bytes(res.fig1_pdf_bytes).full_text

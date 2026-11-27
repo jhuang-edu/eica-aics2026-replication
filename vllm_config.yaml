@@ -1,5 +1,5 @@
 # vLLM Model Serving Configuration for EICA Extraction Pipeline
-# Production deployment on NVIDIA GeForce RTX 3090 (24GB VRAM)
+# Production deployment on NVIDIA GeForce RTX 3090 (24 GiB VRAM)
 model: "Qwen/Qwen2.5-32B-Instruct"
 quantization: "awq"
 dtype: "auto"
@@ -10,6 +10,8 @@ trust_remote_code: true
 seed: 42
 temperature: 0.0
 max_tokens: 2048
-# Design Control: Model weights frozen upon deployment (January 2025)
+# Design Control: Model weights frozen upon deployment (January 2025; static ~19.3 GiB)
+# Provenance Note: Exact Jan. 2025 local AWQ checkpoint SHA was not archived in enterprise logs
+# Reference Prompt Template: prompts/eica_extraction_reference_prompt.md (VLLMExtractor in src/eica_engine.py)
 # Longitudinal comparability guaranteed across 18-month archive (2025.01-2026.06)
 # Pluggable future benchmark path: Qwen3-32B (public synthetic suite only)

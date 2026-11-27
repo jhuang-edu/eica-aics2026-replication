@@ -206,7 +206,7 @@ def plot_fig1_architecture(out_pdf="fig1_architecture.pdf", out_png="fig1_archit
         ("Manager Adjudication (s_esc):", True, 7.9, COLOR_PRIMARY_NAVY),
         ("  Resolves R02, R18, R31 (FA->0)", False, 7.8, COLOR_GREEN_DARK),
         ("  Adopts equiv. R05, R30, R37", False, 7.8, COLOR_TEXT_MAIN),
-        ("Immutable Compliance Log:", True, 7.9, COLOR_TEAL_DARK),
+        ("Structured Audit Log:", True, 7.9, COLOR_TEAL_DARK),
         ("  Anchors, flags, reasons, ts", False, 7.8, COLOR_TEXT_MUTED),
         ("  EU AI Act Art.12/14 & PIPL 24", False, 7.8, COLOR_TEXT_MUTED),
         ("  Upper bound: 95.0% (k=0.896)", True, 7.8, COLOR_GREEN_DARK),
@@ -350,8 +350,8 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
 
     ax1.text(
         0.5, -0.32,
-        f"Field McNemar p = {s['mcnemar_p']:.5f}; Delta-k = {m['kappa']['delta']:+.3f}\n"
-        f"*Exploratory sub-samples (n = {qms['N']}, {ra['N']}).",
+        f"All N=40: McNemar p = {s['mcnemar_p']:.5f}\n"
+        f"Paired Delta-k = {m['kappa']['delta']:+.3f} (*n = {qms['N']}, {ra['N']})",
         transform=ax1.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
 

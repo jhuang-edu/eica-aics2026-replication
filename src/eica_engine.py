@@ -13,13 +13,15 @@ Authors: Junjun Huang*, Ning Chen
 
 from __future__ import annotations
 
+import json
 import math
 import re
 import time
+import urllib.request
 from collections import Counter
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
 # =============================================================================
@@ -1442,4 +1444,153 @@ class FSMDecisionGate:
             final_decision=None,
             error_code="ERR_INVALID_ACTION",
             audit_entry={"ts": ts, "action": action, "blocked": True},
+        )
+
+
+# =============================================================================
+# 5. Reference Prompt Assembler & OpenAI-Compatible vLLM Extractor (Algorithm 1)
+# =============================================================================
+
+REFERENCE_SYSTEM_PROMPT = (
+    "You are a constrained compliance evidence extractor for medical device talent screening "
+    "under ISO 13485:2016 (China GB/T 42061-2022), NMPA GMP, and China State Council Order No. 739/797.\n"
+    "RULES:\n"
+    "1. Extract ONLY verbatim resume quotes and exact 1-based line anchors for Tier-M and Tier-P "
+    "requirements listed in the JSON Schema.\n"
+    "2. NEVER output scalar fit scores, rankings, or hire/reject verdicts.\n"
+    "3. NEVER infer or emit submerged tacit traits (Tier-V slots are masked from the schema).\n"
+    "4. Status must belong strictly to {verified, not_provided, conflicting}.\n"
+    "5. Do NOT inflate weak participation verbs into certified or leadership claims.\n"
+    "6. Ground cross-standard equivalence strictly in the Top-3 version-pinned regulatory clauses provided."
+)
+
+
+def build_extraction_prompt(
+    candidate_id: str,
+    role: str,
+    resume_lines: List[str],
+    rag_clauses: List[Tuple[RegulatoryClause, float]],
+) -> Dict[str, Any]:
+    """
+    Assemble the Algorithm 1 Stage-2 prompt payload and compiled JSON Schema.
+
+    Note: Uses the open English reference prompt template documented in
+    `prompts/eica_extraction_reference_prompt.md` (the partner firm's internal
+    Chinese production prompt text is withheld under SOP/PIPL confidentiality).
+    """
+    schema = OntologySchemaMasker.compile_generation_schema(role)
+    extractable = [r for r in CompetencyOntology.get_requirements(role) if r.tier in ("M", "P")]
+
+    clause_lines = [
+        f"- [{doc.doc_id} | {doc.version_id} | score={score:.3f}] {doc.title}: {doc.text}"
+        for doc, score in rag_clauses
+    ]
+    req_lines = [
+        f"- {r.req_id} (Tier {r.tier}, min_verb_tier={r.min_verb_tier}, cert_proof={int(r.requires_cert_proof)}): {r.label}"
+        for r in extractable
+    ]
+    dossier_lines = [f"L{idx}: {line}" for idx, line in enumerate(resume_lines, start=1)]
+
+    user_prompt = (
+        f"Target Role: {role}\n"
+        f"Candidate ID: {candidate_id}\n\n"
+        f"### Version-Pinned Regulatory Clauses (Top-{len(rag_clauses)} Active D_pin)\n"
+        + ("\n".join(clause_lines) if clause_lines else "(none)")
+        + "\n\n### Extractable Competency Requirements (Tier M & Tier P Only; Tier V Masked)\n"
+        + "\n".join(req_lines)
+        + "\n\n### Numbered De-Identified Candidate Dossier\n"
+        + "\n".join(dossier_lines)
+        + "\n\nReturn a single JSON object conforming strictly to the compiled schema."
+    )
+    return {
+        "messages": [
+            {"role": "system", "content": REFERENCE_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+        "json_schema": schema,
+    }
+
+
+class VLLMExtractor:
+    """
+    OpenAI-compatible vLLM client wrapper implementing Algorithm 1 `LLMExtract`
+    (lines 3-4: greedy decoding T=0, seed=42, retry <= 2, followed by host-side
+    `OntologySchemaMasker.enforce_mask_and_validate`).
+
+    Supports dependency-injected `transport` callable for deterministic offline tests.
+    """
+
+    def __init__(
+        self,
+        endpoint: str = "http://127.0.0.1:8000/v1/chat/completions",
+        model: str = "Qwen/Qwen2.5-32B-Instruct",
+        temperature: float = 0.0,
+        seed: int = 42,
+        max_tokens: int = 2048,
+        max_retries: int = 2,
+        timeout_sec: float = 60.0,
+        transport: Optional[Callable[[dict], str]] = None,
+    ):
+        self.endpoint = endpoint
+        self.model = model
+        self.temperature = temperature
+        self.seed = seed
+        self.max_tokens = max_tokens
+        self.max_retries = max_retries
+        self.timeout_sec = timeout_sec
+        self._transport = transport
+
+    def _default_http_transport(self, payload: dict) -> str:
+        body = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            self.endpoint,
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=self.timeout_sec) as resp:
+            parsed = json.loads(resp.read().decode("utf-8"))
+        return parsed["choices"][0]["message"]["content"]
+
+    def extract(
+        self,
+        candidate_id: str,
+        role: str,
+        resume_lines: List[str],
+        rag_clauses: List[Tuple[RegulatoryClause, float]],
+    ) -> Tuple[dict, List[str]]:
+        """Execute LLMExtract with retry <= max_retries and host-side schema hard masking."""
+        assembled = build_extraction_prompt(candidate_id, role, resume_lines, rag_clauses)
+        payload = {
+            "model": self.model,
+            "messages": assembled["messages"],
+            "temperature": self.temperature,
+            "seed": self.seed,
+            "max_tokens": self.max_tokens,
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "eica_evidence_card",
+                    "strict": True,
+                    "schema": assembled["json_schema"],
+                },
+            },
+        }
+
+        transport = self._transport or self._default_http_transport
+        last_err: Optional[Exception] = None
+        for _attempt in range(self.max_retries + 1):
+            try:
+                raw_text = transport(payload)
+                raw_card = json.loads(raw_text) if isinstance(raw_text, str) else raw_text
+                if not isinstance(raw_card, dict):
+                    raise ValueError("Extractor output must be a JSON object")
+                raw_card.setdefault("candidate_id", candidate_id)
+                raw_card.setdefault("role", role)
+                return OntologySchemaMasker.enforce_mask_and_validate(raw_card, role)
+            except Exception as exc:
+                last_err = exc
+
+        raise RuntimeError(
+            f"LLMExtract failed after {self.max_retries + 1} attempts: {last_err}"
         )

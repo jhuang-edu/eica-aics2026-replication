@@ -25,15 +25,24 @@ import subprocess
 import sys
 import tempfile
 import time
+import unittest
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
-import fitz  # PyMuPDF
+try:
+    import fitz  # PyMuPDF (required for PDF/manuscript checks; optional in standalone code clones)
+except ImportError:  # pragma: no cover
+    fitz = None  # type: ignore[assignment]
 
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CODE_DIR = REPO_ROOT / "code"
+_THIS_CODE_ROOT = Path(__file__).resolve().parents[2]
+_PARENT_ROOT = Path(__file__).resolve().parents[3]
+HAS_FULL_WORKSPACE = (_PARENT_ROOT / "paper" / "main.tex").exists() and (_THIS_CODE_ROOT.name == "code")
+STANDALONE_REPLICATION_MODE = not HAS_FULL_WORKSPACE
+
+REPO_ROOT = _PARENT_ROOT if HAS_FULL_WORKSPACE else _THIS_CODE_ROOT
+CODE_DIR = _THIS_CODE_ROOT
 SRC_DIR = CODE_DIR / "src"
 DATA_DIR = CODE_DIR / "data"
 PAPER_DIR = REPO_ROOT / "paper"
@@ -44,8 +53,30 @@ TEMPLATES_DIR = REPO_ROOT / "Templates"
 EVAL_CSV_PATH = DATA_DIR / "eval_records_40.csv"
 ARCHIVE_CSV_PATH = DATA_DIR / "recruitment_archive_18m.csv"
 
-EXPECTED_EVAL_CSV_SHA256 = "15b02531243e5e5bfe4702c4c3fe2108798b3f2a4ff8897504048d142b2c3910"
-EXPECTED_ARCHIVE_CSV_SHA256 = "2a2c38be33a96221669d747f1414a4c3482b7ab8f468562e8ffc1414e4be3914"
+# Canonical LF-normalized SHA-256 digests (cross-platform invariant across Windows CRLF and Linux/macOS LF)
+EXPECTED_EVAL_CSV_CANONICAL_SHA256 = "f096b353ed1bc1856cedc8761d7b627f8f05ad6d7043e0ca343c15bb5ff1abdc"
+EXPECTED_ARCHIVE_CSV_CANONICAL_SHA256 = "070945d3d1b0b157eaac4170855d5c7f22e43b87caec875b71de4ad45b1da66f"
+# Legacy Windows CRLF byte-exact digests retained for backward-compatible reference
+EXPECTED_EVAL_CSV_CRLF_SHA256 = "15b02531243e5e5bfe4702c4c3fe2108798b3f2a4ff8897504048d142b2c3910"
+EXPECTED_ARCHIVE_CSV_CRLF_SHA256 = "2a2c38be33a96221669d747f1414a4c3482b7ab8f468562e8ffc1414e4be3914"
+EXPECTED_EVAL_CSV_SHA256 = EXPECTED_EVAL_CSV_CANONICAL_SHA256
+EXPECTED_ARCHIVE_CSV_SHA256 = EXPECTED_ARCHIVE_CSV_CANONICAL_SHA256
+
+
+def requires_full_workspace(test_item):
+    """Skip manuscript/LaTeX/Templates-only E2E checks cleanly in standalone replication clones."""
+    return unittest.skipUnless(
+        HAS_FULL_WORKSPACE,
+        "Skipped in standalone code replication clone (requires full author workspace with paper/, Templates/, and tectonic).",
+    )(test_item)
+
+
+def requires_pymupdf(test_item):
+    """Skip PyMuPDF-dependent PDF inspection when fitz is not installed in minimal standalone env."""
+    return unittest.skipUnless(
+        fitz is not None,
+        "Skipped because PyMuPDF (fitz) is optional in standalone code-only environments.",
+    )(test_item)
 
 SECTION_FILES = [
     "01_intro.tex",
@@ -68,6 +99,15 @@ def ensure_src_on_path() -> None:
 
 
 def compute_sha256(path: Path) -> str:
+    """Compute canonical LF-normalized SHA-256 for text/CSV files so CRLF (Windows) and LF (Linux/macOS) match."""
+    raw = path.read_bytes()
+    if path.suffix.lower() in {".csv", ".txt", ".md", ".py", ".tex", ".yaml", ".yml"}:
+        raw = raw.replace(b"\r\n", b"\n")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def compute_raw_sha256(path: Path) -> str:
+    """Compute exact raw-byte SHA-256 without line-ending normalization."""
     h = hashlib.sha256()
     with open(path, "rb") as f:
         while chunk := f.read(8192):
