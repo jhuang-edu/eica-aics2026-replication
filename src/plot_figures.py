@@ -350,7 +350,7 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
 
     ax1.text(
         0.5, -0.32,
-        f"Field McNemar p = {s['mcnemar_p']:.5f} (Delta-k = {m['kappa']['delta']:+.3f})\n"
+        f"Field McNemar p = {s['mcnemar_p']:.5f}; Delta-k = {m['kappa']['delta']:+.3f}\n"
         f"*Exploratory sub-samples (n = {qms['N']}, {ra['N']}).",
         transform=ax1.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
