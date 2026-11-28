@@ -350,7 +350,7 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
 
     ax1.text(
         0.5, -0.32,
-        f"All N={m['N']}: McNemar p = {s['mcnemar_p']:.5f}, Paired \u0394\u03ba = {m['kappa']['delta']:+.3f}\n"
+        f"All N={m['N']}: Exact McNemar p = 0.00635 (11 vs. 1)\n"
         f"*Exploratory small sub-samples (n = {qms['N']}, {ra['N']}).",
         transform=ax1.transAxes, ha="center", fontsize=7.8, fontstyle="italic", color=COLOR_TEXT_MUTED,
     )
