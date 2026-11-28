@@ -151,7 +151,7 @@ def plot_fig1_architecture(out_pdf="fig1_architecture.pdf", out_png="fig1_archit
         ("4-Column Evidence Card:", True, 7.9, COLOR_TEAL_DARK),
         ("  Card(c,r) = <r, e, a, sigma>", True, 7.8, COLOR_PRIMARY_NAVY),
         ("  e(c,r): Verbatim resume span", False, 7.8, COLOR_TEXT_MAIN),
-        ("  a(c,r): Line/page anchor", False, 7.8, COLOR_TEXT_MAIN),
+        ("  a(c,r): Line-span anchor", False, 7.8, COLOR_TEXT_MAIN),
         ("  Retry cap <= 2 on schema err", False, 7.8, COLOR_TEXT_MUTED),
     ], COLOR_LIGHT_TEAL, COLOR_TEAL_MID, header_bg="#CEF5EE", line_step=0.268)
 
@@ -209,7 +209,7 @@ def plot_fig1_architecture(out_pdf="fig1_architecture.pdf", out_png="fig1_archit
         ("Structured Audit Log:", True, 7.9, COLOR_TEAL_DARK),
         ("  Anchors, flags, reasons, ts", False, 7.8, COLOR_TEXT_MUTED),
         ("  EU AI Act Art.12/14 & PIPL 24", False, 7.8, COLOR_TEXT_MUTED),
-        ("  Upper bound: 95.0% (k=0.896)", True, 7.8, COLOR_GREEN_DARK),
+        ("  Upper bound: 95.0% (\u03ba=0.896)", True, 7.8, COLOR_GREEN_DARK),
     ], COLOR_LIGHT_GREEN, COLOR_GREEN_DARK, line_step=0.250)
 
     # Horizontal arrows between stages
@@ -458,13 +458,13 @@ def plot_fig2_results(csv_path="../data/eval_records_40.csv", out_pdf="fig2_resu
     loss_m3 = [abl["M3_EICA_FullVerifier"]["expected_loss_by_lambda_fa"][str(r)] for r in ratios]
 
     ax3.plot(ratios, loss_m0, marker="s", lw=1.7, ms=4.5, color="#718096", linestyle="--",
-             label=f"M0: Manual ({abl['M0_Manual']['total_org_time_min']:.2f} m)")
+             label=f"M0: Manual ({abl['M0_Manual']['total_org_time_min']:.2f} min)")
     ax3.plot(ratios, loss_m1, marker="^", lw=1.7, ms=4.8, color="#2B6CB0",
-             label=f"M1: Soft-Card ({abl['M1_EICA_SoftCard']['total_org_time_min']:.2f} m)")
+             label=f"M1: Soft-Card ({abl['M1_EICA_SoftCard']['total_org_time_min']:.2f} min)")
     ax3.plot(ratios, loss_m2, marker="D", lw=1.7, ms=4.5, color="#319795",
-             label=f"M2: +Hard FSM ({abl['M2_EICA_HardFSM']['total_org_time_min']:.2f} m)")
+             label=f"M2: +Hard FSM ({abl['M2_EICA_HardFSM']['total_org_time_min']:.2f} min)")
     ax3.plot(ratios, loss_m3, marker="o", lw=2.0, ms=5.0, color="#22543D",
-             label=f"M3: +Verifier ({abl['M3_EICA_FullVerifier']['total_org_time_min']:.2f} m)")
+             label=f"M3: +Verifier ({abl['M3_EICA_FullVerifier']['total_org_time_min']:.2f} min)")
 
     ax3.set_xlabel(r"Asymmetric Penalty Ratio ($\lambda_{\mathrm{FA}} / \lambda_{\mathrm{FR}}$)", fontsize=10.6, fontweight="bold", color=COLOR_TEXT_MAIN)
     ax3.set_ylabel(r"Expected Compliance Loss $E[L]$", fontsize=8.8, fontweight="bold", color=COLOR_TEXT_MAIN)
