@@ -1,7 +1,7 @@
 # EICA Constrained Extraction — Reference Prompt Template (`LLMExtract`)
 
 > **Provenance & Disclosure Notice:**  
-> The historical Chinese production prompt deployed inside the partner medical device manufacturer (Jan. 2025–Jun. 2026) incorporates proprietary internal SOP phrasing and is withheld under enterprise confidentiality and China PIPL governance controls. This file provides an **open English Reference Prompt Template** faithfully reproducing the exact structural, ontological, RAG-binding, and schema-masking constraints of **Algorithm 1 (`LLMExtract`, Section III)** for open-science inspection and local vLLM reproduction ([`vllm_config.yaml`](../vllm_config.yaml); `code/vllm_config.yaml` in the full workspace).
+> The historical Chinese production prompt deployed inside the partner medical device manufacturer (Jan. 2025–Jun. 2026) incorporates proprietary internal SOP phrasing and is withheld under enterprise confidentiality and China PIPL governance controls. This file provides an **open English Reference Prompt Template** faithfully reproducing the exact structural, ontological, RAG-binding, and schema-masking constraints of **Algorithm 1 (`LLMExtract`, Section II in 4-page / Section III in 9-page edition)** for open-science inspection and local vLLM reproduction ([`vllm_config.yaml`](../vllm_config.yaml); `code/vllm_config.yaml` in the full workspace).
 
 ---
 
